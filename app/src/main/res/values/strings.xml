@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Git Quick Reference</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="lbl_info">Info</string>
+    <string name="lbl_ok">OK</string>
+    <string name="lbl_cancel">Cancel</string>
+    <string name="lbl_yes">Yes</string>
+    <string name="lbl_no">No</string>
+    <string name="msg_reference_not_found">Sorry, can not find referenced item</string>
+    <string name="msg_prepare_data_failed">Sorry, error occurs while preparing reference data. Please try reinstalling this app.</string>
+
+    <string name="lbl_all_ref">All References</string>
+    <string name="lbl_fav">Favourite</string>
+
+    <string name="lbl_help">Help and Settings</string>
+    <string name="lbl_about">About</string>
+
+</resources>

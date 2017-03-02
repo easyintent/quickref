@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_primary">#4185E2</color>
+    <color name="color_primary_dark">#437BC1</color>
+    <color name="color_accent">#EF4A2A</color>
+
+    <color name="color_nav_center">#5296F3</color>
+
+    <color name="command">#181041</color>
+    <color name="command_bg">#ddd</color>
+
+    <color name="item_title">#443D37</color>
+
+</resources>

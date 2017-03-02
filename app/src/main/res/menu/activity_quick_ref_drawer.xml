@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all"
+            android:icon="@drawable/ic_nav_all"
+            android:title="@string/lbl_all_ref"/>
+        <item
+            android:id="@+id/nav_bookmark"
+            android:icon="@drawable/ic_nav_bookmark"
+            android:title="@string/lbl_fav"/>
+    </group>
+
+    <item android:title="@string/lbl_help">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_nav_about"
+                android:title="@string/lbl_about"/>
+        </menu>
+    </item>
+
+</menu>
