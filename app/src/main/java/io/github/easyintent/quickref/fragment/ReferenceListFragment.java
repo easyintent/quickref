@@ -34,7 +34,6 @@ public class ReferenceListFragment extends ListFragment {
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceListFragment.class);
 
-
     @FragmentArg
     protected String category;
     private List<ReferenceItem> list;
@@ -121,7 +120,9 @@ public class ReferenceListFragment extends ListFragment {
     }
 
     private void showList(ReferenceItem referenceItem) {
-        Intent intent = QuickRefActivity.newIntent(getContext(), referenceItem.getChildren());
+        String title = referenceItem.getTitle();
+        String category = referenceItem.getChildren();
+        Intent intent = QuickRefActivity.newIntent(getContext(), title, category);
         startActivity(intent);
     }
 

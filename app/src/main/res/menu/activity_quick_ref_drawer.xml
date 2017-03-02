@@ -15,7 +15,7 @@
     <item android:title="@string/lbl_help">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_about"
                 android:icon="@drawable/ic_nav_about"
                 android:title="@string/lbl_about"/>
         </menu>
