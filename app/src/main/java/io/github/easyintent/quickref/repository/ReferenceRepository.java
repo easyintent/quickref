@@ -15,6 +15,14 @@ public interface ReferenceRepository {
      * @return
      * @throws RepositoryException
      */
-    List<ReferenceItem> list(@Nullable  String category) throws RepositoryException;
+    List<ReferenceItem> list(@Nullable String category) throws RepositoryException;
+
+    /** Get item by item ids.
+     *
+     * @param ids
+     * @return
+     * @throws RepositoryException
+     */
+    List<ReferenceItem> listByIds(List<String> ids) throws RepositoryException;
 
 }

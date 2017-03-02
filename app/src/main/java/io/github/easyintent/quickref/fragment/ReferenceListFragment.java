@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
+import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
@@ -56,6 +57,7 @@ public class ReferenceListFragment extends ListFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setEmptyText(getString(R.string.msg_empty_ref));
         if (list == null) {
             load(getActivity(), category);
         } else {
@@ -83,7 +85,7 @@ public class ReferenceListFragment extends ListFragment {
         }
 
         if (!success) {
-            info((AppCompatActivity) getActivity(), "load_category_err", message);
+            info((AppCompatActivity) getActivity(), "load_list_error", message);
             return;
         }
 
@@ -116,7 +118,8 @@ public class ReferenceListFragment extends ListFragment {
     }
 
     private void showDetail(ReferenceItem referenceItem) {
-
+        ReferenceItemDialog dialog = ReferenceItemDialog.newInstance(referenceItem.getId());
+        dialog.show(getFragmentManager(), "reference_option");
     }
 
     private void showList(ReferenceItem referenceItem) {

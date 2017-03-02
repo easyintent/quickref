@@ -9,7 +9,7 @@
         <item
             android:id="@+id/nav_bookmark"
             android:icon="@drawable/ic_nav_bookmark"
-            android:title="@string/lbl_fav"/>
+            android:title="@string/lbl_bookmark"/>
     </group>
 
     <item android:title="@string/lbl_help">

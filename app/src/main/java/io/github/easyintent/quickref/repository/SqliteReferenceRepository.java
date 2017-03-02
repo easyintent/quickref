@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -53,17 +55,16 @@ public class SqliteReferenceRepository implements ReferenceRepository {
     @Override
     public List<ReferenceItem> list(@Nullable String category) throws RepositoryException {
 
-        SQLiteDatabase sqlite = null;
         if (category == null) {
             category = MAIN_CATEGORY;
         }
 
-        List<ReferenceItem> result = null;
+        List<ReferenceItem> result = Collections.emptyList();
 
         File dbFile = getDbFile();
 
+        SQLiteDatabase sqlite = null;
         Cursor cursor = null;
-        Cursor titleCursor = null;
 
         try {
             sqlite = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
@@ -85,11 +86,51 @@ public class SqliteReferenceRepository implements ReferenceRepository {
             throw new RepositoryException(context.getString(R.string.msg_reference_not_found), e);
         } finally {
             close(cursor);
-            close(titleCursor);
             close(sqlite);
         }
 
         return result;
+    }
+
+    @Override
+    public List<ReferenceItem> listByIds(List<String> ids) throws RepositoryException {
+
+        List<ReferenceItem> result = Collections.emptyList();
+
+        File dbFile = getDbFile();
+
+        SQLiteDatabase sqlite = null;
+        Cursor cursor = null;
+
+        try {
+            sqlite = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+            int n = ids.size();
+            StringBuilder placeholder = new StringBuilder();
+            for (int i=0; i<n; i++) {
+                placeholder.append("?");
+                if (i+1 < n) {
+                    placeholder.append(",");
+                }
+            }
+
+            String sql = "SELECT id, category, children, title, summary, command, priority " +
+                    "FROM " + REF_TABLE + " " +
+                    "WHERE id IN (" + placeholder + ")";
+
+            cursor = sqlite.rawQuery(sql, ids.toArray(new String[0]));
+            if (cursor.moveToFirst()) {
+                result = createList(cursor);
+            }
+
+        } catch (SQLiteException e) {
+            throw new RepositoryException(context.getString(R.string.msg_reference_not_found), e);
+        } finally {
+            close(cursor);
+            close(sqlite);
+        }
+
+        return result;
+
     }
 
 
@@ -97,7 +138,7 @@ public class SqliteReferenceRepository implements ReferenceRepository {
         List<ReferenceItem> list = new ArrayList<>();
 
         do {
-            String id = cursor.getString(cursor.getColumnIndexOrThrow("category"));
+            String id = cursor.getString(cursor.getColumnIndexOrThrow("id"));
             String title = cursor.getString(cursor.getColumnIndexOrThrow("title"));
             String category = cursor.getString(cursor.getColumnIndexOrThrow("category"));
             String children = cursor.getString(cursor.getColumnIndexOrThrow("children"));

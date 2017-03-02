@@ -3,6 +3,7 @@ package io.github.easyintent.quickref;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
+import io.github.easyintent.quickref.fragment.BookmarkListFragment;
 import io.github.easyintent.quickref.fragment.MessageDialogFragment;
 import io.github.easyintent.quickref.fragment.ReferenceListFragment;
 
@@ -24,6 +26,8 @@ public class MainActivity extends AppCompatActivity
 
     @ViewById
     protected Toolbar toolbar;
+
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         initFragment();
@@ -51,16 +55,30 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            mayPopFragment();
+        }
+    }
+
+    private void mayPopFragment() {
+        FragmentManager manager = getSupportFragmentManager();
+        if (manager.getBackStackEntryCount() > 1) {
+            navigationView.setCheckedItem(R.id.nav_all);
+            showMainFragment();
+        } else {
+            finish();
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        showMainFragment();
+
         switch (item.getItemId()) {
             case R.id.nav_all:
                 break;
             case R.id.nav_bookmark:
+                showBookmark();
                 break;
             case R.id.nav_about:
                 break;
@@ -69,6 +87,17 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showBookmark() {
+        FragmentManager manager = getSupportFragmentManager();
+        BookmarkListFragment fragment = BookmarkListFragment.newInstance();
+        manager.beginTransaction()
+                .replace(R.id.content_frame, fragment, "bookmark_list")
+                .addToBackStack("bookmark")
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
+
     }
 
     private void initFragment() {
@@ -82,12 +111,24 @@ public class MainActivity extends AppCompatActivity
         fragment = ReferenceListFragment.newInstance(null);
         manager.beginTransaction()
                 .replace(R.id.content_frame, fragment, "reference_list")
+                .addToBackStack("main")
                 .commit();
     }
 
     @Override
     public void onOkClicked(MessageDialogFragment dialogFragment) {
-        finish();
+        String tag = dialogFragment.getTag();
+        switch (tag) {
+            case "bookmark_error":
+                // nothing to do
+                break;
+            default:
+                finish();
+        }
     }
 
+    private void showMainFragment() {
+        getSupportFragmentManager()
+                .popBackStack("main", 0);
+    }
 }

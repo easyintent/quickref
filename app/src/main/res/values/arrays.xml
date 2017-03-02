@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="reference_option">
+        <item>Add To Bookmark</item>
+        <item>Share</item>
+    </string-array>
+</resources>
