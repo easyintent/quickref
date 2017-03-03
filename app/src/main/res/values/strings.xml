@@ -17,6 +17,7 @@
 
     <string name="lbl_all_ref">All References</string>
     <string name="lbl_bookmark">Bookmark</string>
+    <string name="lbl_delete_bookmark">Delete Bookmark</string>
 
     <string name="lbl_help">Help and Settings</string>
     <string name="lbl_about">About</string>

@@ -9,6 +9,7 @@
     <color name="command">#181041</color>
     <color name="command_bg">#ddd</color>
 
+    <color name="item_selected">#aaa</color>
     <color name="item_title">#443D37</color>
 
 </resources>

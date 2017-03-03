@@ -3,7 +3,14 @@ package io.github.easyintent.quickref.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
@@ -15,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.github.easyintent.quickref.R;
-import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.config.BookmarkConfig;
+import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
@@ -79,6 +86,57 @@ public class BookmarkListFragment extends ListFragment {
     protected void show(List<ReferenceItem> list) {
         ArrayAdapter<ReferenceItem> adapter = new ReferenceAdapter(getActivity(), list);
         setListAdapter(adapter);
+
+        ListView listView = getListView();
+        listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(new MultiModeCallback());
+
+        setListShown(true);
+
+    }
+
+    private class MultiModeCallback implements ListView.MultiChoiceModeListener {
+
+        private BookmarkConfig bookmarkConfig;
+
+        public MultiModeCallback() {
+            bookmarkConfig = new BookmarkConfig(getActivity());
+        }
+
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.fragment_bookmark_select, menu);
+            return true;
+        }
+
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+        }
+
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.delete_bookmark:
+                    SparseBooleanArray positions = getListView().getCheckedItemPositions();
+                    int n = positions.size();
+                    for (int i=0; i<n; i++) {
+                        String id = list.get(positions.keyAt(i)).getId();
+                        bookmarkConfig.delete(id);
+                    }
+                    mode.finish();
+                    setListShown(false);
+                    loadList(getActivity());
+                    break;
+            }
+            return true;
+        }
+
+        public void onDestroyActionMode(ActionMode mode) {
+        }
+
+        public void onItemCheckedStateChanged(ActionMode mode,  int position, long id, boolean checked) {
+            int n = getListView().getCheckedItemCount();
+            mode.setTitle(String.valueOf(n));
+        }
     }
 
 }
