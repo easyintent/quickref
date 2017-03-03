@@ -19,10 +19,13 @@ public class QuickRefActivity extends AppCompatActivity
         implements MessageDialogFragment.Listener {
 
     @Extra
+    protected String title;
+
+    @Extra
     protected String category;
 
     @Extra
-    protected String title;
+    protected String query;
 
     /** Create new reference list intent.
      *
@@ -35,10 +38,25 @@ public class QuickRefActivity extends AppCompatActivity
      * @return
      */
     @NonNull
-    public static Intent newIntent(Context context, String title, String category) {
-        Intent intent = new Intent();
+    public static Intent newListIntent(Context context, String title, String category) {
+        Intent intent = new Intent(Intents.ACTION_LIST);
         intent.putExtra("category", category);
         intent.putExtra("title", title);
+        intent.setClass(context, QuickRefActivityEx.class);
+        return intent;
+    }
+
+    /** Create intent for searching query.
+     *
+     * @param context
+     * @param query
+     * @return
+     */
+    @NonNull
+    public static Intent newSearchIntent(Context context, String query) {
+        Intent intent = new Intent(Intents.ACTION_SEARCH);
+        intent.putExtra("query", query);
+        intent.putExtra("title", context.getString(R.string.lbl_search_title, query));
         intent.setClass(context, QuickRefActivityEx.class);
         return intent;
     }
@@ -64,13 +82,21 @@ public class QuickRefActivity extends AppCompatActivity
     }
 
     private void initFragment() {
+
         FragmentManager manager = getSupportFragmentManager();
         ReferenceListFragment fragment = (ReferenceListFragment) manager.findFragmentByTag("reference_list");
         if (fragment != null) {
             return;
         }
 
-        fragment = ReferenceListFragment.newInstance(category);
+        boolean searchMode = Intents.ACTION_SEARCH.equals(getIntent().getAction());
+
+        if (searchMode) {
+            fragment = ReferenceListFragment.newSearchInstance(query);
+        } else {
+            fragment = ReferenceListFragment.newListCategoryInstance(category);
+        }
+
         manager.beginTransaction()
                 .replace(R.id.content_frame, fragment, "reference_list")
                 .commit();

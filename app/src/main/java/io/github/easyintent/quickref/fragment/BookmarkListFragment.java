@@ -115,7 +115,7 @@ public class BookmarkListFragment extends ListFragment {
         if (item.hasChildren()) {
             String title = item.getTitle();
             String category = item.getChildren();
-            Intent intent = QuickRefActivity.newIntent(getContext(), title, category);
+            Intent intent = QuickRefActivity.newListIntent(getContext(), title, category);
             startActivity(intent);
         }
     }

@@ -11,6 +11,9 @@
     <string name="lbl_cancel">Cancel</string>
     <string name="lbl_yes">Yes</string>
     <string name="lbl_no">No</string>
+    <string name="lbl_search">Search</string>
+    <string name="lbl_search_reference">Search references</string>
+    <string name="lbl_search_title">Search: %s</string>
 
     <string name="msg_reference_not_found">Sorry, can not find referenced item</string>
     <string name="msg_prepare_data_failed">Sorry, error occurs while preparing reference data. Please try reinstalling this app.</string>

@@ -1,5 +1,6 @@
 package io.github.easyintent.quickref.repository;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface ReferenceRepository {
      * @return
      * @throws RepositoryException
      */
-    List<ReferenceItem> list(@Nullable String category) throws RepositoryException;
+    List<ReferenceItem> list(@NonNull String category) throws RepositoryException;
 
     /** Get item by item ids.
      *
@@ -24,5 +25,14 @@ public interface ReferenceRepository {
      * @throws RepositoryException
      */
     List<ReferenceItem> listByIds(List<String> ids) throws RepositoryException;
+
+
+    /** Search reference by text query.
+     *
+     * @param query
+     * @return
+     * @throws RepositoryException
+     */
+    List<ReferenceItem> search(@Nullable String query) throws RepositoryException;
 
 }

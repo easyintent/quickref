@@ -47,6 +47,16 @@ public class ReferenceListFragment extends ListFragment {
 
     @FragmentArg
     protected String category;
+
+    @FragmentArg
+    protected String query;
+
+    @FragmentArg
+    protected boolean searchMode;
+
+    private RepositoryFactory factory;
+
+
     private List<ReferenceItem> list;
 
     /** Create category list.
@@ -56,10 +66,26 @@ public class ReferenceListFragment extends ListFragment {
      * @return
      */
     @NonNull
-    public static ReferenceListFragment newInstance(@Nullable String category) {
+    public static ReferenceListFragment newListCategoryInstance(@Nullable String category) {
         ReferenceListFragment fragment = new ReferenceListFragmentEx();
         Bundle args = new Bundle();
         args.putString("category", category);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /** Create search fragment.
+     *
+     * @param query
+     *      The search query.
+     * @return
+     */
+    @NonNull
+    public static ReferenceListFragment newSearchInstance(@Nullable String query) {
+        ReferenceListFragment fragment = new ReferenceListFragmentEx();
+        Bundle args = new Bundle();
+        args.putString("query", query);
+        args.putBoolean("searchMode", true);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,17 +94,36 @@ public class ReferenceListFragment extends ListFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setEmptyText(getString(R.string.msg_empty_ref));
-        //getActivity().setTitle(getString(R.string.app_name));
+        factory = RepositoryFactory.newInstance(getActivity());
         if (list == null) {
-            load(getActivity(), category);
+            load();
         } else {
             show(list);
         }
     }
 
+    private void load() {
+        if (searchMode) {
+            search(factory, query);
+        } else {
+            loadCategory(factory, category);
+        }
+    }
+
     @Background
-    protected void load(Context context, String category) {
-        RepositoryFactory factory = RepositoryFactory.newInstance(context);
+    protected void search(RepositoryFactory factory, String query) {
+        ReferenceRepository repo = factory.createCategoryRepository();
+        try {
+            list = repo.search(query);
+            onLoadDone(true, list, null);
+        } catch (RepositoryException e) {
+            logger.debug("Failed to search reference", e);
+            onLoadDone(false, null, e.getMessage());
+        }
+    }
+
+    @Background
+    protected void loadCategory(RepositoryFactory factory, String category) {
         ReferenceRepository repo = factory.createCategoryRepository();
         try {
             list = repo.list(category);
@@ -122,6 +167,7 @@ public class ReferenceListFragment extends ListFragment {
 
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new MultiModeCallback());
+        listView.setFocusable(false);
 
     }
 
@@ -139,7 +185,7 @@ public class ReferenceListFragment extends ListFragment {
     private void showList(ReferenceItem referenceItem) {
         String title = referenceItem.getTitle();
         String category = referenceItem.getChildren();
-        Intent intent = QuickRefActivity.newIntent(getContext(), title, category);
+        Intent intent = QuickRefActivity.newListIntent(getContext(), title, category);
         startActivity(intent);
     }
 

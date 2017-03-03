@@ -8,12 +8,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.github.easyintent.quickref.fragment.AboutFragment;
 import io.github.easyintent.quickref.fragment.BookmarkListFragment;
@@ -25,6 +28,12 @@ public class MainActivity extends AppCompatActivity
         implements
             NavigationView.OnNavigationItemSelectedListener,
             MessageDialogFragment.Listener {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
+
+    // the main category name.
+    //
+    private static final String MAIN_CATEGORY = "main";
 
     @ViewById
     protected Toolbar toolbar;
@@ -49,6 +58,29 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         initFragment();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+
+        final MenuItem item = menu.findItem(R.id.search_ref);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setQueryHint(getString(R.string.lbl_search_reference));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                search(query);
+                item.collapseActionView();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override
@@ -92,6 +124,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void search(String query) {
+        startActivity(QuickRefActivity.newSearchIntent(this, query));
+    }
+
     private void showBookmark() {
         FragmentManager manager = getSupportFragmentManager();
         BookmarkListFragment fragment = BookmarkListFragment.newInstance();
@@ -130,7 +166,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         // show main category
-        fragment = ReferenceListFragment.newInstance(null);
+        fragment = ReferenceListFragment.newListCategoryInstance(MAIN_CATEGORY);
         manager.beginTransaction()
                 .replace(R.id.content_frame, fragment, "reference_list")
                 .addToBackStack("main")

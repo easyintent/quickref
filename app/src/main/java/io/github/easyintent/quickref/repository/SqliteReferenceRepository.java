@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -32,10 +31,6 @@ public class SqliteReferenceRepository implements ReferenceRepository {
 
     private static final String REF_TABLE = "quickref";
 
-    // the main category name
-    //
-    private static final String MAIN_CATEGORY = "main";
-
     // Reference database
     //
     private static final String DB_FILE = "quickref.sqlite";
@@ -53,11 +48,7 @@ public class SqliteReferenceRepository implements ReferenceRepository {
 
     @NonNull
     @Override
-    public List<ReferenceItem> list(@Nullable String category) throws RepositoryException {
-
-        if (category == null) {
-            category = MAIN_CATEGORY;
-        }
+    public List<ReferenceItem> list(@NonNull String category) throws RepositoryException {
 
         List<ReferenceItem> result = Collections.emptyList();
 
@@ -70,7 +61,7 @@ public class SqliteReferenceRepository implements ReferenceRepository {
             sqlite = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
 
             cursor = sqlite.query(REF_TABLE,
-                    new String[]{"id", "category", "children", "title", "summary", "command", "priority"},
+                    selectColumns(),
                     "category = ?",
                     new String[]{category},
                     null,
@@ -133,6 +124,45 @@ public class SqliteReferenceRepository implements ReferenceRepository {
 
     }
 
+    @Override
+    public List<ReferenceItem> search(@Nullable String query) throws RepositoryException {
+
+        List<ReferenceItem> result = Collections.emptyList();
+
+        File dbFile = getDbFile();
+
+        SQLiteDatabase sqlite = null;
+        Cursor cursor = null;
+
+        try {
+            sqlite = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+            String q = "%" + query + "%";
+            cursor = sqlite.query(true, REF_TABLE,
+                    selectColumns(),
+                    "title LIKE ? OR summary LIKE ? OR command LIKE ?",
+                    new String[]{q, q, q},
+                    null,
+                    null,
+                    "category ASC, priority ASC",
+                    null);
+
+            if (cursor.moveToFirst()) {
+                result = createList(cursor);
+            }
+
+        } catch (SQLiteException e) {
+            throw new RepositoryException(context.getString(R.string.msg_reference_not_found), e);
+        } finally {
+            close(cursor);
+            close(sqlite);
+        }
+        return result;
+    }
+
+    @NonNull
+    private String[] selectColumns() {
+        return new String[]{"id", "category", "children", "title", "summary", "command", "priority"};
+    }
 
     private  List<ReferenceItem> createList(Cursor cursor) {
         List<ReferenceItem> list = new ArrayList<>();
