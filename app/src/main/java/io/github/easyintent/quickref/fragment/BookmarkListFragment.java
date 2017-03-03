@@ -1,6 +1,7 @@
 package io.github.easyintent.quickref.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.SparseBooleanArray;
@@ -8,7 +9,9 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -18,9 +21,11 @@ import org.androidannotations.annotations.UiThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.config.BookmarkConfig;
 import io.github.easyintent.quickref.data.ReferenceItem;
@@ -45,7 +50,8 @@ public class BookmarkListFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setEmptyText(getString(R.string.msg_empty_ref));
+        setEmptyText(getString(R.string.msg_bookmark_help));
+        getActivity().setTitle(getString(R.string.lbl_bookmarks));
         if (list == null) {
             loadList(getActivity());
         } else {
@@ -84,15 +90,34 @@ public class BookmarkListFragment extends ListFragment {
     }
 
     protected void show(List<ReferenceItem> list) {
-        ArrayAdapter<ReferenceItem> adapter = new ReferenceAdapter(getActivity(), list);
+        final ArrayAdapter<ReferenceItem> adapter = new ReferenceAdapter(getActivity(), list);
         setListAdapter(adapter);
 
         ListView listView = getListView();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ReferenceItem item = adapter.getItem(i);
+                if (item != null) {
+                    showItem(item);
+                }
+            }
+        });
+
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new MultiModeCallback());
 
         setListShown(true);
+    }
 
+    private void showItem(ReferenceItem item) {
+        if (item.hasChildren()) {
+            String title = item.getTitle();
+            String category = item.getChildren();
+            Intent intent = QuickRefActivity.newIntent(getContext(), title, category);
+            startActivity(intent);
+        }
     }
 
     private class MultiModeCallback implements ListView.MultiChoiceModeListener {
@@ -116,18 +141,24 @@ public class BookmarkListFragment extends ListFragment {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.delete_bookmark:
-                    SparseBooleanArray positions = getListView().getCheckedItemPositions();
-                    int n = positions.size();
-                    for (int i=0; i<n; i++) {
-                        String id = list.get(positions.keyAt(i)).getId();
-                        bookmarkConfig.delete(id);
-                    }
-                    mode.finish();
-                    setListShown(false);
-                    loadList(getActivity());
+                    deleteBookmarks(mode);
                     break;
             }
             return true;
+        }
+
+        private void deleteBookmarks(ActionMode mode) {
+            SparseBooleanArray positions = getListView().getCheckedItemPositions();
+            List<String> bookmarks = new ArrayList<>();
+            int n = positions.size();
+            for (int i=0; i<n; i++) {
+                String id = list.get(positions.keyAt(i)).getId();
+                bookmarks.add(id);
+            }
+            bookmarkConfig.delete(bookmarks);
+            mode.finish();
+            setListShown(false);
+            loadList(getActivity());
         }
 
         public void onDestroyActionMode(ActionMode mode) {

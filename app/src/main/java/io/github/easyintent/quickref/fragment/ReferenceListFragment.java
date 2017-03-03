@@ -8,8 +8,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
@@ -18,10 +26,12 @@ import org.androidannotations.annotations.UiThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
+import io.github.easyintent.quickref.config.BookmarkConfig;
 import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
@@ -58,6 +68,7 @@ public class ReferenceListFragment extends ListFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setEmptyText(getString(R.string.msg_empty_ref));
+        //getActivity().setTitle(getString(R.string.app_name));
         if (list == null) {
             load(getActivity(), category);
         } else {
@@ -97,7 +108,8 @@ public class ReferenceListFragment extends ListFragment {
         setListAdapter(adapter);
 
         // add listener explicitly to list view
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ListView listView = getListView();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ReferenceItem referenceItem = adapter.getItem(i);
@@ -107,6 +119,10 @@ public class ReferenceListFragment extends ListFragment {
             }
 
         });
+
+        listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(new MultiModeCallback());
+
     }
 
     private void showItem(ReferenceItem referenceItem) {
@@ -118,8 +134,6 @@ public class ReferenceListFragment extends ListFragment {
     }
 
     private void showDetail(ReferenceItem referenceItem) {
-        ReferenceItemDialog dialog = ReferenceItemDialog.newInstance(referenceItem.getId());
-        dialog.show(getFragmentManager(), "reference_option");
     }
 
     private void showList(ReferenceItem referenceItem) {
@@ -129,4 +143,52 @@ public class ReferenceListFragment extends ListFragment {
         startActivity(intent);
     }
 
+    private class MultiModeCallback implements ListView.MultiChoiceModeListener {
+
+        private BookmarkConfig bookmarkConfig;
+
+        public MultiModeCallback() {
+            bookmarkConfig = new BookmarkConfig(getActivity());
+        }
+
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.fragment_reference_select, menu);
+            return true;
+        }
+
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+        }
+
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.delete_bookmark:
+                    saveBookmarks(mode);
+                    break;
+            }
+            return true;
+        }
+
+        private void saveBookmarks(ActionMode mode) {
+            SparseBooleanArray positions = getListView().getCheckedItemPositions();
+            List<String> bookmarks = new ArrayList<>();
+            int n = positions.size();
+            for (int i=0; i<n; i++) {
+                String id = list.get(positions.keyAt(i)).getId();
+                bookmarks.add(id);
+            }
+            bookmarkConfig.add(bookmarks);
+            Toast.makeText(getActivity(), R.string.msg_bookmark_saved, Toast.LENGTH_SHORT).show();
+            mode.finish();
+        }
+
+        public void onDestroyActionMode(ActionMode mode) {
+        }
+
+        public void onItemCheckedStateChanged(ActionMode mode,  int position, long id, boolean checked) {
+            int n = getListView().getCheckedItemCount();
+            mode.setTitle(String.valueOf(n));
+        }
+    }
 }

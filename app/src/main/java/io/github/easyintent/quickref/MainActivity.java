@@ -117,17 +117,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onOkClicked(MessageDialogFragment dialogFragment) {
-        String tag = dialogFragment.getTag();
-        switch (tag) {
-            case "bookmark_error":
-                // nothing to do
-                break;
-            default:
-                finish();
-        }
+        // nothing to do
     }
 
     private void showMainFragment() {
+        setTitle(getString(R.string.app_name));
         getSupportFragmentManager()
                 .popBackStack("main", 0);
     }

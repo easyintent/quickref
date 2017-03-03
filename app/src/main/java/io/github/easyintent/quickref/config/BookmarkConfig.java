@@ -36,11 +36,34 @@ public final class BookmarkConfig {
                 .apply();
     }
 
+    public void add(List<String> ids) {
+        SharedPreferences.Editor editor = getSetting()
+                .edit();
+        for (String id: ids) {
+            editor.putLong(id, System.currentTimeMillis());
+        }
+        editor.apply();
+    }
+
+
     public void delete(String id) {
         getSetting()
                 .edit()
                 .remove(id)
                 .apply();
+    }
+
+    /** Delete the bookmark ids.
+     *
+     * @param ids
+     */
+    public void delete(List<String> ids) {
+        SharedPreferences.Editor editor = getSetting()
+                .edit();
+        for (String id: ids) {
+            editor.remove(id);
+        }
+        editor.apply();
     }
 
     /** Get list of bookmark item ids, sorted.
