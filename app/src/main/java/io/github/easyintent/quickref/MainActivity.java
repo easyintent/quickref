@@ -9,11 +9,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
+import io.github.easyintent.quickref.fragment.AboutFragment;
 import io.github.easyintent.quickref.fragment.BookmarkListFragment;
 import io.github.easyintent.quickref.fragment.MessageDialogFragment;
 import io.github.easyintent.quickref.fragment.ReferenceListFragment;
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity
                 showBookmark();
                 break;
             case R.id.nav_about:
+                showAbout();
                 break;
         }
 
@@ -98,6 +101,25 @@ public class MainActivity extends AppCompatActivity
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
+    }
+
+    private void showAbout() {
+        clearNavigationSelection();
+        FragmentManager manager = getSupportFragmentManager();
+        AboutFragment fragment = AboutFragment.newInstance();
+        manager.beginTransaction()
+                .replace(R.id.content_frame, fragment, "about_fragment")
+                .addToBackStack("about")
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
+    }
+
+    private void clearNavigationSelection() {
+        Menu menu = navigationView.getMenu();
+        int n = menu.size();
+        for (int i=0; i<n; i++) {
+            menu.getItem(i).setChecked(false);
+        }
     }
 
     private void initFragment() {
