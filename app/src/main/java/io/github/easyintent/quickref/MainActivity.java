@@ -31,10 +31,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
 
-    // the main category name.
-    //
-    private static final String MAIN_CATEGORY = "main";
-
     @ViewById
     protected Toolbar toolbar;
 
@@ -165,8 +161,8 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        // show main category
-        fragment = ReferenceListFragment.newListCategoryInstance(MAIN_CATEGORY);
+        // show main reference list
+        fragment = ReferenceListFragment.newListChildrenInstance(null);
         manager.beginTransaction()
                 .replace(R.id.content_frame, fragment, "reference_list")
                 .addToBackStack("main")

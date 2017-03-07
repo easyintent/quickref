@@ -2,29 +2,35 @@ package io.github.easyintent.quickref.data;
 
 public class ReferenceItem {
 
+    /** The ID of this reference.
+     *
+     */
     private String id;
+
+    /** Parent id of this reference.
+     *
+     */
+    private String parentId;
+
     private String title;
     private String summary;
 
-    // the command, if available
-    //
+    /** The command, if available.
+     *
+     */
     private String command;
 
-    /** Reference category
+    /** Check whether it is leaf node.
+     *
      *
      */
-    private String category;
-
-    /** Reference children category, if available.
-     *
-     */
-    private String children;
+    private boolean leaf;
 
     public ReferenceItem() {
     }
 
     public boolean hasChildren() {
-        return children != null;
+        return !leaf;
     }
 
     public String getId() {
@@ -59,23 +65,23 @@ public class ReferenceItem {
         this.command = command;
     }
 
-    public boolean hasEmbeddedCommand() {
+    public boolean hasCommand() {
         return command != null;
     }
 
-    public String getCategory() {
-        return category;
+    public String getParentId() {
+        return parentId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
-    public String getChildren() {
-        return children;
+    public boolean isLeaf() {
+        return leaf;
     }
 
-    public void setChildren(String children) {
-        this.children = children;
+    public void setLeaf(boolean leaf) {
+        this.leaf = leaf;
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -22,7 +23,7 @@ public class QuickRefActivity extends AppCompatActivity
     protected String title;
 
     @Extra
-    protected String category;
+    protected String parentId;
 
     @Extra
     protected String query;
@@ -31,16 +32,16 @@ public class QuickRefActivity extends AppCompatActivity
      *
      * @param context
      *      The activity context.
-     * @param category
-     *      The category category, if null it is root category.
+     * @param parentId
+     *      Parent item id, or null for top level list.
      * @param title
      *      Title of this reference
      * @return
      */
     @NonNull
-    public static Intent newListIntent(Context context, String title, String category) {
+    public static Intent newListIntent(@NonNull Context context, @NonNull String title, @Nullable String parentId) {
         Intent intent = new Intent(Intents.ACTION_LIST);
-        intent.putExtra("category", category);
+        intent.putExtra("parentId", parentId);
         intent.putExtra("title", title);
         intent.setClass(context, QuickRefActivityEx.class);
         return intent;
@@ -53,7 +54,7 @@ public class QuickRefActivity extends AppCompatActivity
      * @return
      */
     @NonNull
-    public static Intent newSearchIntent(Context context, String query) {
+    public static Intent newSearchIntent(@NonNull Context context, @NonNull String query) {
         Intent intent = new Intent(Intents.ACTION_SEARCH);
         intent.putExtra("query", query);
         intent.putExtra("title", context.getString(R.string.lbl_search_title, query));
@@ -94,7 +95,7 @@ public class QuickRefActivity extends AppCompatActivity
         if (searchMode) {
             fragment = ReferenceListFragment.newSearchInstance(query);
         } else {
-            fragment = ReferenceListFragment.newListCategoryInstance(category);
+            fragment = ReferenceListFragment.newListChildrenInstance(parentId);
         }
 
         manager.beginTransaction()

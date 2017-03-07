@@ -1,7 +1,6 @@
 package io.github.easyintent.quickref.fragment;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -46,7 +45,7 @@ public class ReferenceListFragment extends ListFragment {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceListFragment.class);
 
     @FragmentArg
-    protected String category;
+    protected String parentId;
 
     @FragmentArg
     protected String query;
@@ -59,17 +58,17 @@ public class ReferenceListFragment extends ListFragment {
 
     private List<ReferenceItem> list;
 
-    /** Create category list.
+    /** Create list of reference fragment.
      *
-     * @param category
-     *      Category category.
+     * @param parentId
+     *      Parent item id, or null for top level list.
      * @return
      */
     @NonNull
-    public static ReferenceListFragment newListCategoryInstance(@Nullable String category) {
+    public static ReferenceListFragment newListChildrenInstance(@Nullable String parentId) {
         ReferenceListFragment fragment = new ReferenceListFragmentEx();
         Bundle args = new Bundle();
-        args.putString("category", category);
+        args.putString("parentId", parentId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,7 +80,7 @@ public class ReferenceListFragment extends ListFragment {
      * @return
      */
     @NonNull
-    public static ReferenceListFragment newSearchInstance(@Nullable String query) {
+    public static ReferenceListFragment newSearchInstance(@NonNull String query) {
         ReferenceListFragment fragment = new ReferenceListFragmentEx();
         Bundle args = new Bundle();
         args.putString("query", query);
@@ -106,7 +105,7 @@ public class ReferenceListFragment extends ListFragment {
         if (searchMode) {
             search(factory, query);
         } else {
-            loadCategory(factory, category);
+            loadCategory(factory, parentId);
         }
     }
 
@@ -123,13 +122,13 @@ public class ReferenceListFragment extends ListFragment {
     }
 
     @Background
-    protected void loadCategory(RepositoryFactory factory, String category) {
+    protected void loadCategory(RepositoryFactory factory, String parentId) {
         ReferenceRepository repo = factory.createCategoryRepository();
         try {
-            list = repo.list(category);
+            list = repo.list(parentId);
             onLoadDone(true, list, null);
         } catch (RepositoryException e) {
-            logger.debug("Failed to get category list", e);
+            logger.debug("Failed to get reference list", e);
             onLoadDone(false, null, e.getMessage());
         }
     }
@@ -184,8 +183,8 @@ public class ReferenceListFragment extends ListFragment {
 
     private void showList(ReferenceItem referenceItem) {
         String title = referenceItem.getTitle();
-        String category = referenceItem.getChildren();
-        Intent intent = QuickRefActivity.newListIntent(getContext(), title, category);
+        String id = referenceItem.getId();
+        Intent intent = QuickRefActivity.newListIntent(getContext(), title, id);
         startActivity(intent);
     }
 

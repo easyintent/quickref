@@ -9,14 +9,15 @@ import io.github.easyintent.quickref.data.ReferenceItem;
 
 public interface ReferenceRepository {
 
-    /** Get reference based on category
+    /** List references for given parentId.
      *
-     * @param category
-     *      The category. If null, it will list main category.
+     * @param parentId
+     *      The parent id. Null for top level reference list.
      * @return
      * @throws RepositoryException
      */
-    List<ReferenceItem> list(@NonNull String category) throws RepositoryException;
+    @NonNull
+    List<ReferenceItem> list(@Nullable String parentId) throws RepositoryException;
 
     /** Get item by item ids.
      *
@@ -24,7 +25,8 @@ public interface ReferenceRepository {
      * @return
      * @throws RepositoryException
      */
-    List<ReferenceItem> listByIds(List<String> ids) throws RepositoryException;
+    @NonNull
+    List<ReferenceItem> listByIds(@NonNull List<String> ids) throws RepositoryException;
 
 
     /** Search reference by text query.
@@ -33,6 +35,7 @@ public interface ReferenceRepository {
      * @return
      * @throws RepositoryException
      */
-    List<ReferenceItem> search(@Nullable String query) throws RepositoryException;
+    @NonNull
+    List<ReferenceItem> search(@NonNull String query) throws RepositoryException;
 
 }

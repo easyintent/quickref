@@ -38,7 +38,7 @@ public class ReferenceAdapter extends ArrayAdapter<ReferenceItem> {
         holder.title.setText(item.getTitle());
         holder.detail.setText(item.getSummary());
 
-        if (item.hasEmbeddedCommand()) {
+        if (item.hasCommand()) {
             holder.command.setText(item.getCommand());
             holder.command.setVisibility(View.VISIBLE);
         } else {
