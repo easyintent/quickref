@@ -13,19 +13,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public final class BookmarkConfig {
+public final class FavoriteConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(BookmarkConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(FavoriteConfig.class);
 
-    private static final String NAME = "bookmark";
+    private static final String NAME = "favorite";
 
     private Context context;
 
-    public BookmarkConfig(Context context) {
+    public FavoriteConfig(Context context) {
         this.context = context;
     }
 
-    /** Add a bookmark.
+    /** Add item to favorite.
      *
      * @param id
      */
@@ -53,7 +53,7 @@ public final class BookmarkConfig {
                 .apply();
     }
 
-    /** Delete the bookmark ids.
+    /** Delete the favorite ids.
      *
      * @param ids
      */
@@ -66,7 +66,7 @@ public final class BookmarkConfig {
         editor.apply();
     }
 
-    /** Get list of bookmark item ids, sorted.
+    /** Get list of favorite item ids, sorted.
      *
      * @return
      */

@@ -30,7 +30,7 @@ import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
-import io.github.easyintent.quickref.config.BookmarkConfig;
+import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
@@ -190,10 +190,10 @@ public class ReferenceListFragment extends ListFragment {
 
     private class MultiModeCallback implements ListView.MultiChoiceModeListener {
 
-        private BookmarkConfig bookmarkConfig;
+        private FavoriteConfig favoriteConfig;
 
         public MultiModeCallback() {
-            bookmarkConfig = new BookmarkConfig(getActivity());
+            favoriteConfig = new FavoriteConfig(getActivity());
         }
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -208,23 +208,23 @@ public class ReferenceListFragment extends ListFragment {
 
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.delete_bookmark:
-                    saveBookmarks(mode);
+                case R.id.add_favorite:
+                    saveFavorites(mode);
                     break;
             }
             return true;
         }
 
-        private void saveBookmarks(ActionMode mode) {
+        private void saveFavorites(ActionMode mode) {
             SparseBooleanArray positions = getListView().getCheckedItemPositions();
-            List<String> bookmarks = new ArrayList<>();
+            List<String> favorites = new ArrayList<>();
             int n = positions.size();
             for (int i=0; i<n; i++) {
                 String id = list.get(positions.keyAt(i)).getId();
-                bookmarks.add(id);
+                favorites.add(id);
             }
-            bookmarkConfig.add(bookmarks);
-            Toast.makeText(getActivity(), R.string.msg_bookmark_saved, Toast.LENGTH_SHORT).show();
+            favoriteConfig.add(favorites);
+            Toast.makeText(getActivity(), R.string.msg_favorite_saved, Toast.LENGTH_SHORT).show();
             mode.finish();
         }
 

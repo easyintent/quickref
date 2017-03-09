@@ -26,24 +26,24 @@ import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
-import io.github.easyintent.quickref.config.BookmarkConfig;
+import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
 
 @EFragment
-public class BookmarkListFragment extends ListFragment {
+public class FavoriteListFragment extends ListFragment {
 
-    private static final Logger logger  = LoggerFactory.getLogger(BookmarkListFragment.class);
+    private static final Logger logger  = LoggerFactory.getLogger(FavoriteListFragment.class);
 
     private List<ReferenceItem> list;
     private RepositoryFactory factory;
-    private BookmarkConfig bookmarkConfig;
+    private FavoriteConfig favoriteConfig;
 
-    public static BookmarkListFragment newInstance() {
+    public static FavoriteListFragment newInstance() {
         Bundle args = new Bundle();
-        BookmarkListFragment fragment = new BookmarkListFragmentEx();
+        FavoriteListFragment fragment = new FavoriteListFragmentEx();
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,22 +51,22 @@ public class BookmarkListFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setEmptyText(getString(R.string.msg_bookmark_help));
-        getActivity().setTitle(getString(R.string.lbl_bookmarks));
+        setEmptyText(getString(R.string.msg_favorite_help));
+        getActivity().setTitle(getString(R.string.lbl_favorites));
 
         factory = RepositoryFactory.newInstance(getActivity());
-        bookmarkConfig = new BookmarkConfig(getActivity());
+        favoriteConfig = new FavoriteConfig(getActivity());
 
         if (list == null) {
-            loadList(factory, bookmarkConfig);
+            loadList(factory, favoriteConfig);
         } else {
             show(list);
         }
     }
 
     @Background
-    protected void loadList(RepositoryFactory factory, BookmarkConfig bookmark) {
-        List<String> ids = bookmark.list();
+    protected void loadList(RepositoryFactory factory, FavoriteConfig favoriteConfig) {
+        List<String> ids = favoriteConfig.list();
         ReferenceRepository repo = factory.createCategoryRepository();
         try {
             List<ReferenceItem> newData = repo.listByIds(ids);
@@ -87,7 +87,7 @@ public class BookmarkListFragment extends ListFragment {
         show(list);
 
         if (!success) {
-            Dialog.info(getFragmentManager(), "bookmark_error", message);
+            Dialog.info(getFragmentManager(), "favorite_error", message);
         }
     }
 
@@ -129,7 +129,7 @@ public class BookmarkListFragment extends ListFragment {
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = getActivity().getMenuInflater();
-            inflater.inflate(R.menu.fragment_bookmark_select, menu);
+            inflater.inflate(R.menu.fragment_favorite_select, menu);
             return true;
         }
 
@@ -139,25 +139,25 @@ public class BookmarkListFragment extends ListFragment {
 
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.delete_bookmark:
-                    deleteBookmarks(mode);
+                case R.id.delete_favorite:
+                    deleteFavorites(mode);
                     break;
             }
             return true;
         }
 
-        private void deleteBookmarks(ActionMode mode) {
+        private void deleteFavorites(ActionMode mode) {
             SparseBooleanArray positions = getListView().getCheckedItemPositions();
-            List<String> bookmarks = new ArrayList<>();
+            List<String> favorites = new ArrayList<>();
             int n = positions.size();
             for (int i=0; i<n; i++) {
                 String id = list.get(positions.keyAt(i)).getId();
-                bookmarks.add(id);
+                favorites.add(id);
             }
-            bookmarkConfig.delete(bookmarks);
+            favoriteConfig.delete(favorites);
             mode.finish();
             setListShown(false);
-            loadList(factory, bookmarkConfig);
+            loadList(factory, favoriteConfig);
         }
 
         public void onDestroyActionMode(ActionMode mode) {

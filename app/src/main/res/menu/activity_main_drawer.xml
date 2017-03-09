@@ -7,9 +7,9 @@
             android:icon="@drawable/ic_nav_all"
             android:title="@string/lbl_all_ref"/>
         <item
-            android:id="@+id/nav_bookmark"
-            android:icon="@drawable/ic_nav_bookmark"
-            android:title="@string/lbl_bookmarks"/>
+            android:id="@+id/nav_favorite"
+            android:icon="@drawable/ic_nav_favorite"
+            android:title="@string/lbl_favorites"/>
     </group>
 
     <item android:title="@string/lbl_help">

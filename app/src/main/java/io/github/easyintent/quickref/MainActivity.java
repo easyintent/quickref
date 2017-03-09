@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.easyintent.quickref.fragment.AboutFragment;
-import io.github.easyintent.quickref.fragment.BookmarkListFragment;
+import io.github.easyintent.quickref.fragment.FavoriteListFragment;
 import io.github.easyintent.quickref.fragment.MessageDialogFragment;
 import io.github.easyintent.quickref.fragment.ReferenceListFragment;
 
@@ -107,8 +107,8 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.nav_all:
                 break;
-            case R.id.nav_bookmark:
-                showBookmark();
+            case R.id.nav_favorite:
+                showFavorites();
                 break;
             case R.id.nav_about:
                 showAbout();
@@ -124,12 +124,12 @@ public class MainActivity extends AppCompatActivity
         startActivity(QuickRefActivity.newSearchIntent(this, query));
     }
 
-    private void showBookmark() {
+    private void showFavorites() {
         FragmentManager manager = getSupportFragmentManager();
-        BookmarkListFragment fragment = BookmarkListFragment.newInstance();
+        FavoriteListFragment fragment = FavoriteListFragment.newInstance();
         manager.beginTransaction()
-                .replace(R.id.content_frame, fragment, "bookmark_list")
-                .addToBackStack("bookmark")
+                .replace(R.id.content_frame, fragment, "favorite_list")
+                .addToBackStack("favorite")
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 

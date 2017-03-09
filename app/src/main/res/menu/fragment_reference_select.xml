@@ -3,9 +3,9 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/delete_bookmark"
-        android:icon="@drawable/ic_action_mode_bookmark"
+        android:id="@+id/add_favorite"
+        android:icon="@drawable/ic_action_fav"
         app:showAsAction="always"
-        android:title="@string/lbl_add_bookmark"/>
+        android:title="@string/lbl_add_favorite"/>
 
 </menu>
