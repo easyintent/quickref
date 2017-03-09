@@ -1,6 +1,5 @@
 package io.github.easyintent.quickref.fragment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -39,6 +38,8 @@ public class BookmarkListFragment extends ListFragment {
     private static final Logger logger  = LoggerFactory.getLogger(BookmarkListFragment.class);
 
     private List<ReferenceItem> list;
+    private RepositoryFactory factory;
+    private BookmarkConfig bookmarkConfig;
 
     public static BookmarkListFragment newInstance() {
         Bundle args = new Bundle();
@@ -52,18 +53,20 @@ public class BookmarkListFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
         setEmptyText(getString(R.string.msg_bookmark_help));
         getActivity().setTitle(getString(R.string.lbl_bookmarks));
+
+        factory = RepositoryFactory.newInstance(getActivity());
+        bookmarkConfig = new BookmarkConfig(getActivity());
+
         if (list == null) {
-            loadList(getActivity());
+            loadList(factory, bookmarkConfig);
         } else {
             show(list);
         }
     }
 
     @Background
-    protected void loadList(Context context) {
-        BookmarkConfig bookmark = new BookmarkConfig(context);
+    protected void loadList(RepositoryFactory factory, BookmarkConfig bookmark) {
         List<String> ids = bookmark.list();
-        RepositoryFactory factory = RepositoryFactory.newInstance(context);
         ReferenceRepository repo = factory.createCategoryRepository();
         try {
             List<ReferenceItem> newData = repo.listByIds(ids);
@@ -72,7 +75,6 @@ public class BookmarkListFragment extends ListFragment {
             logger.debug("Failed to get list", e);
             onLoadDone(false, Collections.<ReferenceItem>emptyList(), e.getMessage());
         }
-
     }
 
     @UiThread
@@ -122,10 +124,7 @@ public class BookmarkListFragment extends ListFragment {
 
     private class MultiModeCallback implements ListView.MultiChoiceModeListener {
 
-        private BookmarkConfig bookmarkConfig;
-
         public MultiModeCallback() {
-            bookmarkConfig = new BookmarkConfig(getActivity());
         }
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -158,7 +157,7 @@ public class BookmarkListFragment extends ListFragment {
             bookmarkConfig.delete(bookmarks);
             mode.finish();
             setListShown(false);
-            loadList(getActivity());
+            loadList(factory, bookmarkConfig);
         }
 
         public void onDestroyActionMode(ActionMode mode) {
