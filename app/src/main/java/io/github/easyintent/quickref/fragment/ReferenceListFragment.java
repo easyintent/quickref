@@ -55,7 +55,6 @@ public class ReferenceListFragment extends ListFragment {
 
     private RepositoryFactory factory;
 
-
     private List<ReferenceItem> list;
 
     /** Create list of reference fragment.
@@ -87,6 +86,12 @@ public class ReferenceListFragment extends ListFragment {
         args.putBoolean("searchMode", true);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
