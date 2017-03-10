@@ -1,32 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_medium"
-        android:src="@drawable/quickref_logo"/>
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="@color/text_title"
-        android:textSize="@dimen/text_large"
-        android:textStyle="bold"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/padding_loose"
+            android:src="@drawable/quickref_logo"/>
 
-    <TextView
-        android:id="@+id/version_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_tight"
-        android:text="@string/msg_about_version"
-        android:textSize="@dimen/text_small"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@color/text_title"
+            android:textSize="@dimen/text_large"
+            android:textStyle="bold"/>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/version_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/msg_about_version"
+            android:textSize="@dimen/text_tiny"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/padding_tight"
+            android:gravity="center"
+            android:text="@string/msg_about"
+            android:textColor="@color/text_info"
+            android:textSize="@dimen/text_small"/>
+
+        <TextView
+            android:id="@+id/link_view"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/app_home"
+            android:textColor="@color/text_link"/>
+
+    </LinearLayout>
+</ScrollView>

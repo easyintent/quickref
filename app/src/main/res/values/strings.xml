@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Git Quick Reference</string>
+    <string name="app_home">https://github.com/easyintent/quickref</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -25,10 +26,14 @@
 
     <string name="lbl_help">Help and About</string>
     <string name="lbl_about">About</string>
+    <string name="lbl_visit">Visit</string>
 
     <string name="msg_empty_ref">No reference available</string>
     <string name="msg_favorite_help">To add to favorites, tap and hold reference item then tap \"add to favorite\"</string>
     <string name="msg_favorite_saved">Added to favorites</string>
     <string name="msg_about_version">Version %s</string>
+    <string name="msg_about">This application is opensource. Visit project page to get latest source code or reporting issue.</string>
+    <string name="msg_no_app">No suitable application to complete this action</string>
+
 
 </resources>

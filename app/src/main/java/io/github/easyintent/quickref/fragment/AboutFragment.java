@@ -1,14 +1,19 @@
 package io.github.easyintent.quickref.fragment;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
@@ -36,6 +41,17 @@ public class AboutFragment extends Fragment {
     @AfterViews
     protected void afterViews() {
         showVersion(getActivity());
+    }
+
+    @Click(R.id.link_view)
+    protected void linkClicked() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(getString(R.string.app_home)));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(getActivity(), R.string.msg_no_app, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showVersion(Context context) {

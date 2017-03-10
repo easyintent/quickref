@@ -10,6 +10,8 @@
     <color name="command_bg">#ddd</color>
 
     <color name="text_title">#443D37</color>
+    <color name="text_info">#555555</color>
+    <color name="text_link">#4185E2</color>
 
     <color name="item_selected">#aaa</color>
     <color name="item_title">@color/text_title</color>
