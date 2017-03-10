@@ -15,8 +15,6 @@ import android.view.MenuItem;
 
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.github.easyintent.quickref.fragment.AboutFragment;
 import io.github.easyintent.quickref.fragment.FavoriteListFragment;
@@ -28,8 +26,6 @@ public class MainActivity extends AppCompatActivity
         implements
             NavigationView.OnNavigationItemSelectedListener,
             MessageDialogFragment.Listener {
-
-    private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
 
     @ViewById
     protected Toolbar toolbar;
@@ -45,7 +41,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.lbl_nav_open, R.string.lbl_nav_close);
 
         drawer.addDrawerListener(toggle);
         toggle.syncState();
