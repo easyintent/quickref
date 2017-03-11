@@ -38,7 +38,6 @@ public class FavoriteListFragment extends ListFragment {
 
     private static final Logger logger  = LoggerFactory.getLogger(FavoriteListFragment.class);
 
-    private List<ReferenceItem> list;
     private RepositoryFactory factory;
     private FavoriteConfig favoriteConfig;
 
@@ -53,7 +52,6 @@ public class FavoriteListFragment extends ListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        setRetainInstance(true);
     }
 
     @Override
@@ -65,11 +63,12 @@ public class FavoriteListFragment extends ListFragment {
         factory = RepositoryFactory.newInstance(getActivity());
         favoriteConfig = new FavoriteConfig(getActivity());
 
-        if (list == null) {
-            loadList(factory, favoriteConfig);
-        } else {
-            show(list);
-        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        reload();
     }
 
     @Override
@@ -92,13 +91,11 @@ public class FavoriteListFragment extends ListFragment {
 
     @UiThread
     protected void onLoadDone(boolean success, List<ReferenceItem> newList, String message) {
-        list = newList;
         if (!isAdded()) {
             return;
         }
 
-        show(list);
-
+        show(newList);
         if (!success) {
             Dialog.info(getFragmentManager(), "favorite_error", message);
         }
@@ -121,7 +118,7 @@ public class FavoriteListFragment extends ListFragment {
         });
 
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-        listView.setMultiChoiceModeListener(new MultiModeCallback());
+        listView.setMultiChoiceModeListener(new MultiModeCallback(list));
 
         setListShown(true);
     }
@@ -135,9 +132,17 @@ public class FavoriteListFragment extends ListFragment {
         }
     }
 
+    private void reload() {
+        setListShown(false);
+        loadList(factory, favoriteConfig);
+    }
+
     private class MultiModeCallback implements ListView.MultiChoiceModeListener {
 
-        public MultiModeCallback() {
+        private List<ReferenceItem> list;
+
+        public MultiModeCallback(List<ReferenceItem> list) {
+            this.list = list;
         }
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -169,8 +174,7 @@ public class FavoriteListFragment extends ListFragment {
             }
             favoriteConfig.delete(favorites);
             mode.finish();
-            setListShown(false);
-            loadList(factory, favoriteConfig);
+            reload();
         }
 
         public void onDestroyActionMode(ActionMode mode) {
