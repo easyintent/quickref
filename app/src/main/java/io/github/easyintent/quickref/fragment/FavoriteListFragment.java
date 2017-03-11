@@ -14,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
@@ -175,6 +176,8 @@ public class FavoriteListFragment extends ListFragment {
             favoriteConfig.delete(favorites);
             mode.finish();
             reload();
+
+            Toast.makeText(getActivity(), R.string.msg_favorite_removed, Toast.LENGTH_SHORT).show();
         }
 
         public void onDestroyActionMode(ActionMode mode) {

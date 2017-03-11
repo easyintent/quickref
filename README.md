@@ -9,8 +9,9 @@ It work without internet connection.
 **NOTE**: The quick reference document itself (the cheatsheet)
 can be found in [quickref-document repository](https://github.com/easyintent/quickref-document).
 
-<img alt="Main page" src="images/screenshot-1.jpg" width="240" />
-<img alt="Reference page" src="images/screenshot-2.jpg" width="240" />
+<img src="images/screenshot-1.png" width="240" alt="Main page" />
+<img src="images/screenshot-2.png" width="240" alt="Reference page" />
+<img src="images/screenshot-3.png" width="240" alt="Search" />
 
 # License
 

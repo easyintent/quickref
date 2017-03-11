@@ -24,8 +24,9 @@
     <string name="lbl_nav_close">Close drawer</string>
 
     <string name="msg_empty_ref">No reference available</string>
-    <string name="msg_favorite_help">To add to favorites, tap and hold reference item then tap \"add to favorite\"</string>
+    <string name="msg_favorite_help">To add to favorites, tap and hold reference item then tap &#x2764; (add to favorite)</string>
     <string name="msg_favorite_saved">Saved to favorites</string>
+    <string name="msg_favorite_removed">Removed to favorites</string>
     <string name="msg_about_version">Version %s</string>
     <string name="msg_about">This application is open source. Visit project page to get latest source code or reporting issue.</string>
     <string name="msg_no_app">No suitable application to complete this action</string>
