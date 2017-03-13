@@ -66,7 +66,7 @@ public final class FavoriteConfig {
         editor.apply();
     }
 
-    /** Get list of favorite item ids, sorted.
+    /** Get list of favorite item ids, sorted saved last first.
      *
      * @return
      */
@@ -78,7 +78,7 @@ public final class FavoriteConfig {
             public int compare(Map.Entry<String, ?> e1, Map.Entry<String, ?> e2) {
                 Long t1 = (Long) e1.getValue();
                 Long t2 = (Long) e2.getValue();
-                return t1.compareTo(t2);
+                return t2.compareTo(t1);
             }
         });
         int n = entry.size();

@@ -18,7 +18,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import io.github.easyintent.quickref.R;
@@ -95,7 +97,7 @@ public class SqliteReferenceRepository implements ReferenceRepository {
     }
 
     @Override
-    public List<ReferenceItem> listByIds(List<String> ids) throws RepositoryException {
+    public List<ReferenceItem> listByIds(final List<String> ids) throws RepositoryException {
 
         List<ReferenceItem> result = Collections.emptyList();
 
@@ -117,13 +119,27 @@ public class SqliteReferenceRepository implements ReferenceRepository {
         SQLiteDatabase sqlite = null;
         Cursor cursor = null;
 
-
         try {
             sqlite = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
 
             cursor = sqlite.rawQuery(sql, ids.toArray(new String[0]));
+
+            // save unordered result to map
+            Map<String,ReferenceItem> maps = new HashMap<>();
             if (cursor.moveToFirst()) {
-                result = createList(cursor);
+                do {
+                    ReferenceItem item = toReferenceItem(cursor);
+                    maps.put(item.getId(), item);
+                } while (cursor.moveToNext());
+            }
+
+            // create new list with the same order as args list
+            result = new ArrayList<>();
+            for (String id: ids) {
+                ReferenceItem ref = maps.get(id);
+                if (ref != null) {
+                    result.add(ref);
+                }
             }
 
         } catch (SQLiteException e) {
@@ -181,26 +197,33 @@ public class SqliteReferenceRepository implements ReferenceRepository {
         List<ReferenceItem> list = new ArrayList<>();
 
         do {
-            String id = cursor.getString(cursor.getColumnIndexOrThrow("id"));
-            String title = cursor.getString(cursor.getColumnIndexOrThrow("title"));
-            String parentId = cursor.getString(cursor.getColumnIndexOrThrow("parent_id"));
-            boolean leaf = cursor.getLong(cursor.getColumnIndexOrThrow("leaf")) == 1;
-            String summary = cursor.getString(cursor.getColumnIndexOrThrow("summary"));
-            String command = cursor.getString(cursor.getColumnIndexOrThrow("command"));
 
-            ReferenceItem item = new ReferenceItem();
-            item.setId(id);
-            item.setParentId(parentId);
-            item.setLeaf(leaf);
-            item.setTitle(title);
-            item.setSummary(summary);
-            item.setCommand(command);
+            ReferenceItem item = toReferenceItem(cursor);
 
             list.add(item);
 
         } while (cursor.moveToNext());
 
         return list;
+    }
+
+    @NonNull
+    private ReferenceItem toReferenceItem(Cursor cursor) {
+        String id = cursor.getString(cursor.getColumnIndexOrThrow("id"));
+        String title = cursor.getString(cursor.getColumnIndexOrThrow("title"));
+        String parentId = cursor.getString(cursor.getColumnIndexOrThrow("parent_id"));
+        boolean leaf = cursor.getLong(cursor.getColumnIndexOrThrow("leaf")) == 1;
+        String summary = cursor.getString(cursor.getColumnIndexOrThrow("summary"));
+        String command = cursor.getString(cursor.getColumnIndexOrThrow("command"));
+
+        ReferenceItem item = new ReferenceItem();
+        item.setId(id);
+        item.setParentId(parentId);
+        item.setLeaf(leaf);
+        item.setTitle(title);
+        item.setSummary(summary);
+        item.setCommand(command);
+        return item;
     }
 
     @NonNull
