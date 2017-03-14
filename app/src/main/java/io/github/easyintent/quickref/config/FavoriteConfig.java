@@ -3,9 +3,6 @@ package io.github.easyintent.quickref.config;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,38 +12,44 @@ import java.util.Map;
 
 public final class FavoriteConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(FavoriteConfig.class);
+    //private static final Logger logger = LoggerFactory.getLogger(FavoriteConfig.class);
 
     private static final String NAME = "favorite";
 
     private Context context;
 
+    // item index since last item saved using this instance
+    private int itemIndex;
+
     public FavoriteConfig(Context context) {
         this.context = context;
+        itemIndex = 0;
     }
 
     /** Add item to favorite.
      *
      * @param id
      */
-    public void add(String id) {
-        getSetting()
+    public synchronized void add(String id) {
+        SharedPreferences settings = getSetting();
+        settings
                 .edit()
-                .putLong(id, System.currentTimeMillis())
+                .putLong(id, System.currentTimeMillis() + itemIndex++)
                 .apply();
     }
 
-    public void add(List<String> ids) {
-        SharedPreferences.Editor editor = getSetting()
-                .edit();
+    public synchronized void add(List<String> ids) {
+        SharedPreferences settings = getSetting();
+        SharedPreferences.Editor editor = settings.edit();
+
+        long time = System.currentTimeMillis();
         for (String id: ids) {
-            editor.putLong(id, System.currentTimeMillis());
+            editor.putLong(id, time + itemIndex++);
         }
         editor.apply();
     }
 
-
-    public void delete(String id) {
+    public synchronized void delete(String id) {
         getSetting()
                 .edit()
                 .remove(id)
@@ -57,7 +60,7 @@ public final class FavoriteConfig {
      *
      * @param ids
      */
-    public void delete(List<String> ids) {
+    public synchronized void delete(List<String> ids) {
         SharedPreferences.Editor editor = getSetting()
                 .edit();
         for (String id: ids) {
@@ -70,7 +73,7 @@ public final class FavoriteConfig {
      *
      * @return
      */
-    public List<String> list() {
+    public synchronized List<String> list() {
         Map<String, ?> all = getSetting().getAll();
         List<? extends Map.Entry<String, ?>> entry = new LinkedList<>(all.entrySet());
         Collections.sort(entry, new Comparator<Map.Entry<String, ?>>() {
@@ -87,6 +90,10 @@ public final class FavoriteConfig {
             array[i] = entry.get(i).getKey();
         }
         return Arrays.asList(array);
+    }
+
+    public synchronized void clear() {
+        getSetting().edit().clear().apply();
     }
 
     private SharedPreferences getSetting() {
