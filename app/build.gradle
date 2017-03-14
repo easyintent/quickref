@@ -25,6 +25,14 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+                showStandardStreams = true
+            }
+        }
+    }
 }
 
 ext {
@@ -51,6 +59,7 @@ dependencies {
     apt "org.androidannotations:androidannotations:$aaVersion"
 
     testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.3.1'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
