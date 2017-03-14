@@ -12,8 +12,6 @@ import java.util.Map;
 
 public final class FavoriteConfig {
 
-    //private static final Logger logger = LoggerFactory.getLogger(FavoriteConfig.class);
-
     private static final String NAME = "favorite";
 
     private Context context;

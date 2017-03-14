@@ -38,17 +38,13 @@ public class FavoriteTest {
         favoriteConfig.add("3");
 
         // will be retrieved first saved last
-
         List<String> ids = favoriteConfig.list();
         assertThat(ids, is(Arrays.asList("3", "2", "1")));
     }
 
     @Test
     public void testSaveMany() {
-        // it does not care the id format
         favoriteConfig.add(Arrays.asList("1", "2", "3"));
-
-        // will be retrieved first saved last
 
         List<String> ids = favoriteConfig.list();
         assertThat(ids, is(Arrays.asList("3", "2", "1")));
@@ -56,13 +52,11 @@ public class FavoriteTest {
 
     @Test
     public void testDelete() {
-        // it does not care the id format
         favoriteConfig.add(Arrays.asList("1", "2", "3", "4"));
         favoriteConfig.delete("3");
 
         List<String> ids = favoriteConfig.list();
         assertThat(ids, is(Arrays.asList("4", "2", "1")));
-
     }
 
 
@@ -74,7 +68,6 @@ public class FavoriteTest {
 
         List<String> ids = favoriteConfig.list();
         assertThat(ids, is(Arrays.asList("2", "4", "3", "1")));
-
     }
 
 }
