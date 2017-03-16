@@ -15,9 +15,10 @@ the quick reference document itself (the cheat sheet) visit
 repository.
 
 
-<img src="images/screenshot-1.png" width="200px" alt="Main page" />
-<img src="images/screenshot-2.png" width="200px" alt="Reference page" />
-<img src="images/screenshot-3.png" width="200px" alt="Search" />
+| <img src="images/screenshot-1.png" width="220px" alt="Main Page" /> | <img src="images/screenshot-2.png" width="220px" alt="Reference List" /> | <img src="images/screenshot-3.png" width="220px" alt="Search" /> |
+|:---------:|:--------------:|:---------:|
+| Main Page | Reference List | Search    |
+
 
 # License
 
