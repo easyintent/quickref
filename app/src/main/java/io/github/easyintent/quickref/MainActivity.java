@@ -15,6 +15,8 @@ import android.view.MenuItem;
 
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.github.easyintent.quickref.fragment.AboutFragment;
 import io.github.easyintent.quickref.fragment.FavoriteListFragment;
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity
         implements
             NavigationView.OnNavigationItemSelectedListener,
             MessageDialogFragment.Listener {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
 
     @ViewById
     protected Toolbar toolbar;
@@ -88,7 +92,6 @@ public class MainActivity extends AppCompatActivity
     private void mayPopFragment() {
         FragmentManager manager = getSupportFragmentManager();
         if (manager.getBackStackEntryCount() > 1) {
-            navigationView.setCheckedItem(R.id.nav_all);
             showMainFragment();
         } else {
             finish();
@@ -132,7 +135,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showAbout() {
-        clearNavigationSelection();
         FragmentManager manager = getSupportFragmentManager();
         AboutFragment fragment = AboutFragment.newInstance();
         manager.beginTransaction()
@@ -140,14 +142,7 @@ public class MainActivity extends AppCompatActivity
                 .addToBackStack("about")
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
-    }
 
-    private void clearNavigationSelection() {
-        Menu menu = navigationView.getMenu();
-        int n = menu.size();
-        for (int i=0; i<n; i++) {
-            menu.getItem(i).setChecked(false);
-        }
     }
 
     private void initFragment() {
@@ -163,6 +158,8 @@ public class MainActivity extends AppCompatActivity
                 .replace(R.id.content_frame, fragment, "reference_list")
                 .addToBackStack("main")
                 .commit();
+
+        navigationView.setCheckedItem(R.id.nav_all);
     }
 
     @Override
@@ -174,5 +171,7 @@ public class MainActivity extends AppCompatActivity
         setTitle(getString(R.string.app_name));
         getSupportFragmentManager()
                 .popBackStack("main", 0);
+
+        navigationView.setCheckedItem(R.id.nav_all);
     }
 }

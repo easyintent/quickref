@@ -14,10 +14,12 @@
 
     <item android:title="@string/lbl_help">
         <menu>
-            <item
-                android:id="@+id/nav_about"
-                android:icon="@drawable/ic_nav_about"
-                android:title="@string/lbl_about"/>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_about"
+                    android:icon="@drawable/ic_nav_about"
+                    android:title="@string/lbl_about"/>
+            </group>
         </menu>
     </item>
 
