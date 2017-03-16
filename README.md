@@ -1,17 +1,23 @@
 # Git Quick Reference
 
-<a href='https://play.google.com/store/apps/details?id=io.github.easyintent.quickref'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="240px"/></a>
+<a href='https://play.google.com/store/apps/details?id=io.github.easyintent.quickref'>
+ <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="240px"/>
+</a>
 
 Git quick reference application for android.
-Show "git cheatsheet" on the go.
+Showing "git cheat sheet" on the go.
 It work without internet connection.
+Currently it does not requires any permissions.
 
-**NOTE**: The quick reference document itself (the cheat sheet)
-can be found in [quickref-document repository](https://github.com/easyintent/quickref-document).
+This repository is for the android application. For
+the quick reference document itself (the cheat sheet) visit
+[quickref-document](https://github.com/easyintent/quickref-document)
+repository.
 
-<img src="images/screenshot-1.png" width="240" alt="Main page" />
-<img src="images/screenshot-2.png" width="240" alt="Reference page" />
-<img src="images/screenshot-3.png" width="240" alt="Search" />
+
+<img src="images/screenshot-1.png" width="200px" alt="Main page" />
+<img src="images/screenshot-2.png" width="200px" alt="Reference page" />
+<img src="images/screenshot-3.png" width="200px" alt="Search" />
 
 # License
 
