@@ -48,12 +48,12 @@ apt {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.android.support:design:25.3.0'
 
     compile "org.androidannotations:androidannotations-api:$aaVersion"
     compile ('commons-io:commons-io:2.4') {  transitive = false  }
-    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.slf4j:slf4j-api:1.7.22'
     compile 'eu.lp0.slf4j:slf4j-android:1.7.22-0'
 
     apt "org.androidannotations:androidannotations:$aaVersion"
