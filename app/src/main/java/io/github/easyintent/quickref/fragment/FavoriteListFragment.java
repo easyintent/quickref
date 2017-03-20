@@ -33,6 +33,7 @@ import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
+import io.github.easyintent.quickref.util.ReferenceListSelection;
 
 @EFragment
 public class FavoriteListFragment extends ListFragment {
@@ -167,12 +168,7 @@ public class FavoriteListFragment extends ListFragment {
 
         private void deleteFavorites(ActionMode mode) {
             SparseBooleanArray positions = getListView().getCheckedItemPositions();
-            List<String> favorites = new ArrayList<>();
-            int n = positions.size();
-            for (int i=0; i<n; i++) {
-                String id = list.get(positions.keyAt(i)).getId();
-                favorites.add(id);
-            }
+            List<String> favorites = ReferenceListSelection.getChecked(list, positions);
             favoriteConfig.delete(favorites);
             mode.finish();
             reload();

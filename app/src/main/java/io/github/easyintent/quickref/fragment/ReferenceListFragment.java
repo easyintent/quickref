@@ -35,6 +35,7 @@ import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
+import io.github.easyintent.quickref.util.ReferenceListSelection;
 
 import static io.github.easyintent.quickref.fragment.Dialog.info;
 
@@ -222,12 +223,7 @@ public class ReferenceListFragment extends ListFragment {
 
         private void saveFavorites(ActionMode mode) {
             SparseBooleanArray positions = getListView().getCheckedItemPositions();
-            List<String> favorites = new ArrayList<>();
-            int n = positions.size();
-            for (int i=0; i<n; i++) {
-                String id = list.get(positions.keyAt(i)).getId();
-                favorites.add(id);
-            }
+            List<String> favorites = ReferenceListSelection.getChecked(list, positions);
             favoriteConfig.add(favorites);
             Toast.makeText(getActivity(), R.string.msg_favorite_saved, Toast.LENGTH_SHORT).show();
             mode.finish();
