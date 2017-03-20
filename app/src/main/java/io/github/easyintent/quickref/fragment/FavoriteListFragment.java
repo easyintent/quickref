@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.IgnoreWhen;
 import org.androidannotations.annotations.UiThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,11 +93,8 @@ public class FavoriteListFragment extends ListFragment {
     }
 
     @UiThread
+    @IgnoreWhen(IgnoreWhen.State.DETACHED)
     protected void onLoadDone(boolean success, List<ReferenceItem> newList, String message) {
-        if (!isAdded()) {
-            return;
-        }
-
         show(newList);
         if (!success) {
             Dialog.info(getFragmentManager(), "favorite_error", message);

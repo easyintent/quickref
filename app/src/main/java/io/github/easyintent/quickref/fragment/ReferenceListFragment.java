@@ -21,6 +21,7 @@ import android.widget.Toast;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
+import org.androidannotations.annotations.IgnoreWhen;
 import org.androidannotations.annotations.UiThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,16 +141,12 @@ public class ReferenceListFragment extends ListFragment {
     }
 
     @UiThread
+    @IgnoreWhen(IgnoreWhen.State.DETACHED)
     protected void onLoadDone(boolean success, List<ReferenceItem> newList, String message) {
-        if (!isAdded()) {
-            return;
-        }
-
         if (!success) {
             info((AppCompatActivity) getActivity(), "load_list_error", message);
             return;
         }
-
         show(newList);
     }
 
