@@ -1,6 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
-
 
 android {
     compileSdkVersion 25
@@ -12,6 +10,12 @@ android {
         versionCode 4
         versionName "0.4.0-git"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["classSuffix": "Ex"]
+            }
+        }
     }
     buildTypes {
         release {
@@ -39,14 +43,6 @@ ext {
     aaVersion = '4.2.0'
 }
 
-apt {
-    arguments {
-        androidManifestFile variant.outputs[0]?.processResources?.manifestFile
-        resourcePackageName android.defaultConfig.applicationId
-        classSuffix "Ex"
-    }
-}
-
 dependencies {
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.android.support:design:25.3.0'
@@ -56,7 +52,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.22'
     compile 'eu.lp0.slf4j:slf4j-android:1.7.22-0'
 
-    apt "org.androidannotations:androidannotations:$aaVersion"
+    annotationProcessor "org.androidannotations:androidannotations:$aaVersion"
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.3.1'
