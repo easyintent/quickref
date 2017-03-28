@@ -11,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -23,7 +22,6 @@ import org.androidannotations.annotations.UiThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,6 +77,14 @@ public class FavoriteListFragment extends ListFragment {
         menu.clear();
     }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        ReferenceItem item = (ReferenceItem) l.getItemAtPosition(position);
+        if (item != null) {
+            showItem(item);
+        }
+    }
+
     @Background
     protected void loadList(RepositoryFactory factory, FavoriteConfig favoriteConfig) {
         List<String> ids = favoriteConfig.list();
@@ -106,17 +112,6 @@ public class FavoriteListFragment extends ListFragment {
         setListAdapter(adapter);
 
         ListView listView = getListView();
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ReferenceItem item = adapter.getItem(i);
-                if (item != null) {
-                    showItem(item);
-                }
-            }
-        });
-
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new MultiModeCallback(list));
 

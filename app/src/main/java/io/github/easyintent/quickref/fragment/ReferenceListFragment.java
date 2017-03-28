@@ -14,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,7 +25,6 @@ import org.androidannotations.annotations.UiThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
@@ -108,6 +106,14 @@ public class ReferenceListFragment extends ListFragment {
         }
     }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        ReferenceItem referenceItem = (ReferenceItem) l.getItemAtPosition(position);
+        if (referenceItem != null) {
+            showItem(referenceItem);
+        }
+    }
+
     private void load() {
         if (searchMode) {
             search(factory, query);
@@ -154,19 +160,7 @@ public class ReferenceListFragment extends ListFragment {
         final ReferenceAdapter adapter = new ReferenceAdapter(getContext(), list);
         setListAdapter(adapter);
 
-        // add listener explicitly to list view
         ListView listView = getListView();
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ReferenceItem referenceItem = adapter.getItem(i);
-                if (referenceItem != null) {
-                    showItem(referenceItem);
-                }
-            }
-
-        });
-
         listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new MultiModeCallback());
         listView.setFocusable(false);
