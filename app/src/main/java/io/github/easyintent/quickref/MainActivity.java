@@ -31,9 +31,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
 
-    @ViewById
-    protected Toolbar toolbar;
-
+    private Toolbar toolbar;
     private NavigationView navigationView;
 
     @Override
@@ -41,6 +39,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import org.androidannotations.annotations.EActivity;
@@ -27,6 +28,8 @@ public class QuickRefActivity extends AppCompatActivity
 
     @Extra
     protected String query;
+
+    private Toolbar toolbar;
 
     /** Create new reference list intent.
      *
@@ -66,6 +69,8 @@ public class QuickRefActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quick_ref);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(title);
         initFragment();
