@@ -7,8 +7,8 @@ android {
         applicationId "io.github.easyintent.quickref"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 4
-        versionName "0.4.0"
+        versionCode 5
+        versionName "0.5.0-git"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
