@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "io.github.easyintent.quickref"
         minSdkVersion 16
@@ -41,7 +41,7 @@ android {
 }
 
 ext {
-    aaVersion = '4.2.0'
+    aaVersion = '4.3.1'
 }
 
 dependencies {
