@@ -12,13 +12,11 @@ import org.robolectric.annotation.Config;
 import java.util.Arrays;
 import java.util.List;
 
-import io.github.easyintent.quickref.BuildConfig;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(manifest = "src/test/AndroidManifest.xml")
 public class FavoriteTest {
 
     private FavoriteConfig favoriteConfig;
