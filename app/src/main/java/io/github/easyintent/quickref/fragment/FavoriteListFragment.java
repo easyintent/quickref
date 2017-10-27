@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
@@ -51,6 +52,9 @@ public class FavoriteListFragment extends Fragment
 
     @ViewById
     protected TextView emptyView;
+
+    @ViewById
+    protected ViewSwitcher switcher;
 
     private RepositoryFactory factory;
     private FavoriteConfig favoriteConfig;
@@ -124,6 +128,7 @@ public class FavoriteListFragment extends Fragment
         final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, selector, this);
         recyclerView.setAdapter(adapter);
         emptyView.setVisibility(list.size() > 0 ? View.GONE : View.VISIBLE);
+        setListShown(true);
     }
 
     private void showItem(ReferenceItem item) {
@@ -136,8 +141,12 @@ public class FavoriteListFragment extends Fragment
     }
 
     private void reload() {
-        //setListShown(false);
+        setListShown(false);
         loadList(factory, favoriteConfig);
+    }
+
+    private void setListShown(boolean shown) {
+        switcher.setDisplayedChild(shown ? 0 : 1);
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
@@ -63,6 +64,10 @@ public class ReferenceListFragment extends Fragment
 
     @ViewById
     protected View emptyView;
+
+    @ViewById
+    protected ViewSwitcher switcher;
+
 
     private RepositoryFactory factory;
     private List<ReferenceItem> list;
@@ -147,6 +152,7 @@ public class ReferenceListFragment extends Fragment
     }
 
     private void load() {
+        setListShown(false);
         if (searchMode) {
             search(factory, query);
         } else {
@@ -192,6 +198,7 @@ public class ReferenceListFragment extends Fragment
         final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, selector, this);
         recyclerView.setAdapter(adapter);
         emptyView.setVisibility(list.size() == 0 ? View.VISIBLE : View.GONE);
+        setListShown(true);
     }
 
     private void showItem(ReferenceItem referenceItem) {
@@ -223,6 +230,10 @@ public class ReferenceListFragment extends Fragment
     @Override
     public void onMultiSelectorStart() {
         ((AppCompatActivity) getActivity()).startSupportActionMode(selectorCallback);
+    }
+
+    private void setListShown(boolean shown) {
+        switcher.setDisplayedChild(shown ? 0 : 1);
     }
 
     private class SelectorCallback extends ModalMultiSelectorCallback  {
