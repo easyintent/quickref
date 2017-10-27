@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -69,6 +70,8 @@ public class ReferenceListFragment extends Fragment
     @ViewById
     protected ViewSwitcher switcher;
 
+    @ViewById
+    protected CardView cardView;
 
     private RepositoryFactory factory;
     private List<ReferenceItem> list;
@@ -187,7 +190,10 @@ public class ReferenceListFragment extends Fragment
         final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, selector, this);
         recyclerView.setAdapter(adapter);
         selectorCallback.setList(list); // update selector list
-        emptyView.setVisibility(list.size() == 0 ? View.VISIBLE : View.GONE);
+
+        boolean hasContent = list.size() > 0;
+        emptyView.setVisibility(hasContent ? View.GONE : View.VISIBLE);
+        cardView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
 
         setListShown(true);
     }
