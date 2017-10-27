@@ -200,13 +200,13 @@ public class FavoriteListFragment extends Fragment
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            mode.finish();
             switch (item.getItemId()) {
                 case R.id.delete_favorite:
                     deleteFromFavorites();
                     break;
             }
             selector.clearSelections();
-            mode.finish();
             return true;
         }
     }
