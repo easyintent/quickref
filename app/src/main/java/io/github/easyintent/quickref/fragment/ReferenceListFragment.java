@@ -7,9 +7,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
+import com.bignerdranch.android.multiselector.MultiSelector;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
@@ -20,10 +27,12 @@ import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
+import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
@@ -56,6 +65,8 @@ public class ReferenceListFragment extends Fragment
     private RepositoryFactory factory;
     private List<ReferenceItem> list;
 
+    private MultiSelector selector;
+    private SelectorCallback selectorCallback;
 
     /** Create list of reference fragment.
      *
@@ -92,13 +103,28 @@ public class ReferenceListFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        selector = new MultiSelector();
+        selectorCallback = new SelectorCallback(selector);
+    }
+
+    private void addSelectedItemsToFavorites() {
+        int n = list.size();
+        List<String> favorites = new ArrayList<>();
+        for (int i=0; i<n; i++) {
+            if (selector.isSelected(i, 0)) {
+                favorites.add(list.get(i).getId());
+            }
+        }
+        FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
+        favoriteConfig.add(favorites);
+        Toast.makeText(getActivity(), R.string.msg_favorite_saved, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        factory = RepositoryFactory.newInstance(getActivity());
 
+        factory = RepositoryFactory.newInstance(getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         if (list == null) {
@@ -106,6 +132,15 @@ public class ReferenceListFragment extends Fragment
         } else {
             show(list);
         }
+    }
+
+    public boolean allowBack() {
+        if (selector.isSelectable()) {
+            selector.clearSelections();
+            selector.setSelectable(false);
+            return false;
+        }
+        return true;
     }
 
     private void load() {
@@ -151,10 +186,9 @@ public class ReferenceListFragment extends Fragment
     }
 
     private void show(List<ReferenceItem> list) {
-        final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, this);
+        final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, selector, this);
         recyclerView.setAdapter(adapter);
         emptyView.setVisibility(list.size() == 0 ? View.VISIBLE : View.GONE);
-
     }
 
     private void showItem(ReferenceItem referenceItem) {
@@ -180,6 +214,37 @@ public class ReferenceListFragment extends Fragment
     public void onItemTap(ReferenceItem referenceItem, int index) {
         if (referenceItem != null) {
             showItem(referenceItem);
+        }
+    }
+
+    @Override
+    public void onMultiSelectorStart() {
+        ((AppCompatActivity) getActivity()).startSupportActionMode(selectorCallback);
+    }
+
+    private class SelectorCallback extends ModalMultiSelectorCallback  {
+
+        public SelectorCallback(MultiSelector multiSelector) {
+            super(multiSelector);
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+            super.onCreateActionMode(actionMode, menu);
+            getActivity().getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            mode.finish();
+            switch (item.getItemId()) {
+                case R.id.add_favorite:
+                    addSelectedItemsToFavorites();
+                    break;
+            }
+            selector.clearSelections();
+            return true;
         }
     }
 

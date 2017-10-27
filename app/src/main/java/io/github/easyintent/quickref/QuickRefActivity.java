@@ -31,6 +31,8 @@ public class QuickRefActivity extends AppCompatActivity
 
     private Toolbar toolbar;
 
+    private ReferenceListFragment fragment;
+
     /** Create new reference list intent.
      *
      * @param context
@@ -76,6 +78,13 @@ public class QuickRefActivity extends AppCompatActivity
         initFragment();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (fragment.allowBack()) {
+            finish();
+        }
+    }
+
     @OptionsItem(android.R.id.home)
     protected void upClicked() {
         finish();
@@ -84,7 +93,7 @@ public class QuickRefActivity extends AppCompatActivity
     private void initFragment() {
 
         FragmentManager manager = getSupportFragmentManager();
-        ReferenceListFragment fragment = (ReferenceListFragment) manager.findFragmentByTag("reference_list");
+        fragment = (ReferenceListFragment) manager.findFragmentByTag("reference_list");
         if (fragment != null) {
             return;
         }

@@ -1,10 +1,14 @@
 package io.github.easyintent.quickref.fragment;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.bignerdranch.android.multiselector.MultiSelector;
+import com.bignerdranch.android.multiselector.SwappingHolder;
 
 import java.util.List;
 
@@ -15,9 +19,11 @@ public class ReferenceRecyclerAdapter extends RecyclerView.Adapter<ReferenceRecy
 
     private List<ReferenceItem> list;
     private OnItemTapListener listener;
+    private MultiSelector selector;
 
-    public ReferenceRecyclerAdapter(List<ReferenceItem> list, OnItemTapListener listener) {
+    public ReferenceRecyclerAdapter(List<ReferenceItem> list, MultiSelector selector, OnItemTapListener listener) {
         this.list = list;
+        this.selector = selector;
         this.listener = listener;
     }
 
@@ -47,25 +53,42 @@ public class ReferenceRecyclerAdapter extends RecyclerView.Adapter<ReferenceRecy
         return list.size();
     }
 
-    final class ViewHolder extends RecyclerView.ViewHolder {
+    final class ViewHolder extends SwappingHolder implements View.OnClickListener, View.OnLongClickListener {
 
         private TextView title;
         private TextView detail;
         private TextView command;
 
         public ViewHolder(View itemView) {
-            super(itemView);
+            super(itemView, selector);
+
+            setSelectionModeBackgroundDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.list_item));
+
             title = (TextView) itemView.findViewById(R.id.title_view);
             detail = (TextView) itemView.findViewById(R.id.detail_view);
             command = (TextView) itemView.findViewById(R.id.command_view);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int pos = getLayoutPosition();
-                    listener.onItemTap(list.get(pos), pos);
-                }
-            });
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (!selector.tapSelection(this)) {
+                int pos = getLayoutPosition();
+                listener.onItemTap(list.get(pos), pos);
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if (!selector.isSelectable()) {
+                listener.onMultiSelectorStart();
+                selector.setSelectable(true);
+                selector.setSelected(this, true);
+                return true;
+            }
+            return false;
         }
     }
 
