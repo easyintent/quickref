@@ -135,12 +135,12 @@ public class ReferenceListFragment extends Fragment
 
     @Override
     public boolean allowBack() {
-        if (selector.isSelectable()) {
-            selector.clearSelections();
-            selector.setSelectable(false);
-            return false;
+        if (!selector.isSelectable()) {
+            return true;
         }
-        return true;
+        selector.clearSelections();
+        selector.setSelectable(false);
+        return false;
     }
 
     private void load() {
@@ -225,7 +225,7 @@ public class ReferenceListFragment extends Fragment
     }
 
     @Override
-    public void onMultiSelectorStart() {
+    public void onMultiSelectionStart() {
         ((AppCompatActivity) getActivity()).startSupportActionMode(selectorCallback);
     }
 

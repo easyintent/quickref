@@ -141,11 +141,15 @@ public class FavoriteListFragment extends Fragment
 
     private void showItem(ReferenceItem item) {
         if (item.hasChildren()) {
-            String title = item.getTitle();
-            String id = item.getId();
-            Intent intent = QuickRefActivity.newListIntent(getContext(), title, id);
-            startActivity(intent);
+            showChildren(item);
         }
+    }
+
+    private void showChildren(ReferenceItem item) {
+        String title = item.getTitle();
+        String id = item.getId();
+        Intent intent = QuickRefActivity.newListIntent(getContext(), title, id);
+        startActivity(intent);
     }
 
     private void reload() {
@@ -159,12 +163,12 @@ public class FavoriteListFragment extends Fragment
 
     @Override
     public boolean allowBack() {
-        if (selector.isSelectable()) {
-            selector.clearSelections();
-            selector.setSelectable(false);
-            return false;
+        if (!selector.isSelectable()) {
+            return true;
         }
-        return true;
+        selector.clearSelections();
+        selector.setSelectable(false);
+        return false;
     }
 
     @Override
@@ -175,7 +179,7 @@ public class FavoriteListFragment extends Fragment
     }
 
     @Override
-    public void onMultiSelectorStart() {
+    public void onMultiSelectionStart() {
         ((AppCompatActivity) getActivity()).startSupportActionMode(selectorCallback);
     }
 

@@ -18,10 +18,10 @@ import io.github.easyintent.quickref.data.ReferenceItem;
 public class ReferenceRecyclerAdapter extends RecyclerView.Adapter<ReferenceRecyclerAdapter.ViewHolder> {
 
     private List<ReferenceItem> list;
-    private OnItemTapListener listener;
+    private OnItemTapListener<ReferenceItem> listener;
     private MultiSelector selector;
 
-    public ReferenceRecyclerAdapter(List<ReferenceItem> list, MultiSelector selector, OnItemTapListener listener) {
+    public ReferenceRecyclerAdapter(List<ReferenceItem> list, MultiSelector selector, OnItemTapListener<ReferenceItem> listener) {
         this.list = list;
         this.selector = selector;
         this.listener = listener;
@@ -82,15 +82,13 @@ public class ReferenceRecyclerAdapter extends RecyclerView.Adapter<ReferenceRecy
 
         @Override
         public boolean onLongClick(View view) {
-            if (!selector.isSelectable()) {
-                listener.onMultiSelectorStart();
-                selector.setSelectable(true);
-                selector.setSelected(this, true);
-                return true;
+            if (selector.isSelectable()) {
+                return false;
             }
-            return false;
+            listener.onMultiSelectionStart();
+            selector.setSelectable(true);
+            selector.setSelected(this, true);
+            return true;
         }
     }
-
-
 }
