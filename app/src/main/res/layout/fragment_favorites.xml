@@ -28,7 +28,7 @@
             android:layout_centerInParent="true"
             android:gravity="center"
             android:padding="@dimen/padding_medium"
-            android:text="@string/msg_empty_ref" />
+            android:text="@string/msg_favorite_help" />
 
     </RelativeLayout>
 

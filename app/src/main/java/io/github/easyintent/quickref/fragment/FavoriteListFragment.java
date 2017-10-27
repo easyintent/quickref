@@ -3,25 +3,30 @@ package io.github.easyintent.quickref.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ListFragment;
-import android.util.SparseBooleanArray;
-import android.view.ActionMode;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
+import com.bignerdranch.android.multiselector.MultiSelector;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.IgnoreWhen;
 import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,15 +37,27 @@ import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
-import io.github.easyintent.quickref.util.ReferenceListSelection;
 
-@EFragment
-public class FavoriteListFragment extends ListFragment implements ClosableFragment {
+@EFragment(R.layout.fragment_favorites)
+public class FavoriteListFragment extends Fragment
+        implements
+            ClosableFragment,
+            OnItemTapListener<ReferenceItem> {
 
     private static final Logger logger  = LoggerFactory.getLogger(FavoriteListFragment.class);
 
+    @ViewById
+    protected RecyclerView recyclerView;
+
+    @ViewById
+    protected TextView emptyView;
+
     private RepositoryFactory factory;
     private FavoriteConfig favoriteConfig;
+    private List<ReferenceItem> list;
+
+    private MultiSelector selector;
+    private SelectorCallback selectorCallback;
 
     public static FavoriteListFragment newInstance() {
         Bundle args = new Bundle();
@@ -53,16 +70,19 @@ public class FavoriteListFragment extends ListFragment implements ClosableFragme
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        selector = new MultiSelector();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setEmptyText(getString(R.string.msg_favorite_help));
         getActivity().setTitle(getString(R.string.lbl_favorites));
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         factory = RepositoryFactory.newInstance(getActivity());
         favoriteConfig = new FavoriteConfig(getActivity());
+        selectorCallback = new SelectorCallback(selector);
 
     }
 
@@ -75,14 +95,6 @@ public class FavoriteListFragment extends ListFragment implements ClosableFragme
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        ReferenceItem item = (ReferenceItem) l.getItemAtPosition(position);
-        if (item != null) {
-            showItem(item);
-        }
     }
 
     @Background
@@ -101,6 +113,7 @@ public class FavoriteListFragment extends ListFragment implements ClosableFragme
     @UiThread
     @IgnoreWhen(IgnoreWhen.State.DETACHED)
     protected void onLoadDone(boolean success, List<ReferenceItem> newList, String message) {
+        list = newList;
         show(newList);
         if (!success) {
             Dialog.info(getFragmentManager(), "favorite_error", message);
@@ -108,14 +121,9 @@ public class FavoriteListFragment extends ListFragment implements ClosableFragme
     }
 
     protected void show(List<ReferenceItem> list) {
-        final ArrayAdapter<ReferenceItem> adapter = new ReferenceAdapter(getActivity(), list);
-        setListAdapter(adapter);
-
-        ListView listView = getListView();
-        listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-        listView.setMultiChoiceModeListener(new MultiModeCallback(list));
-
-        setListShown(true);
+        final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, selector, this);
+        recyclerView.setAdapter(adapter);
+        emptyView.setVisibility(list.size() > 0 ? View.GONE : View.VISIBLE);
     }
 
     private void showItem(ReferenceItem item) {
@@ -128,58 +136,69 @@ public class FavoriteListFragment extends ListFragment implements ClosableFragme
     }
 
     private void reload() {
-        setListShown(false);
+        //setListShown(false);
         loadList(factory, favoriteConfig);
     }
 
     @Override
     public boolean allowBack() {
+        if (selector.isSelectable()) {
+            selector.clearSelections();
+            selector.setSelectable(false);
+            return false;
+        }
         return true;
     }
 
-    private class MultiModeCallback implements ListView.MultiChoiceModeListener {
+    @Override
+    public void onItemTap(ReferenceItem item, int index) {
+        if (item != null) {
+            showItem(item);
+        }
+    }
 
-        private List<ReferenceItem> list;
+    @Override
+    public void onMultiSelectorStart() {
+        ((AppCompatActivity) getActivity()).startSupportActionMode(selectorCallback);
+    }
 
-        public MultiModeCallback(List<ReferenceItem> list) {
-            this.list = list;
+    private void deleteFromFavorites() {
+        int n = list.size();
+        List<String> favorites = new ArrayList<>();
+        for (int i=0; i<n; i++) {
+            if (selector.isSelected(i, 0)) {
+                favorites.add(list.get(i).getId());
+            }
+        }
+        favoriteConfig.delete(favorites);
+        reload();
+
+        Toast.makeText(getActivity(), R.string.msg_favorite_removed, Toast.LENGTH_SHORT).show();
+    }
+
+    private class SelectorCallback extends ModalMultiSelectorCallback {
+
+        public SelectorCallback(MultiSelector multiSelector) {
+            super(multiSelector);
         }
 
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inflater = getActivity().getMenuInflater();
-            inflater.inflate(R.menu.fragment_favorite_select, menu);
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+            super.onCreateActionMode(actionMode, menu);
+            getActivity().getMenuInflater().inflate(R.menu.fragment_favorite_select, menu);
             return true;
         }
 
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return true;
-        }
-
+        @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.delete_favorite:
-                    deleteFavorites(mode);
+                    deleteFromFavorites();
                     break;
             }
-            return true;
-        }
-
-        private void deleteFavorites(ActionMode mode) {
-            SparseBooleanArray positions = getListView().getCheckedItemPositions();
-            List<String> favorites = ReferenceListSelection.getChecked(list, positions);
-            favoriteConfig.delete(favorites);
+            selector.clearSelections();
             mode.finish();
-            reload();
-
-            Toast.makeText(getActivity(), R.string.msg_favorite_removed, Toast.LENGTH_SHORT).show();
-        }
-
-        public void onDestroyActionMode(ActionMode mode) {
-        }
-
-        public void onItemCheckedStateChanged(ActionMode mode,  int position, long id, boolean checked) {
-            int n = getListView().getCheckedItemCount();
-            mode.setTitle(String.valueOf(n));
+            return true;
         }
     }
 
