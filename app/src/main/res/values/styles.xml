@@ -18,4 +18,10 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="HLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/command_bg</item>
+    </style>
+
 </resources>
