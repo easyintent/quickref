@@ -74,7 +74,6 @@ public class FavoriteListFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        selector = new MultiSelector();
     }
 
     @Override
@@ -86,8 +85,9 @@ public class FavoriteListFragment extends Fragment
 
         factory = RepositoryFactory.newInstance(getActivity());
         favoriteConfig = new FavoriteConfig(getActivity());
-        selectorCallback = new SelectorCallback(selector);
 
+        selector = new MultiSelector();
+        selectorCallback = new SelectorCallback(selector);
     }
 
     @Override
@@ -171,20 +171,6 @@ public class FavoriteListFragment extends Fragment
         ((AppCompatActivity) getActivity()).startSupportActionMode(selectorCallback);
     }
 
-    private void deleteFromFavorites() {
-        int n = list.size();
-        List<String> favorites = new ArrayList<>();
-        for (int i=0; i<n; i++) {
-            if (selector.isSelected(i, 0)) {
-                favorites.add(list.get(i).getId());
-            }
-        }
-        favoriteConfig.delete(favorites);
-        reload();
-
-        Toast.makeText(getActivity(), R.string.msg_favorite_removed, Toast.LENGTH_SHORT).show();
-    }
-
     private class SelectorCallback extends ModalMultiSelectorCallback {
 
         public SelectorCallback(MultiSelector multiSelector) {
@@ -208,6 +194,19 @@ public class FavoriteListFragment extends Fragment
             }
             selector.clearSelections();
             return true;
+        }
+
+        private void deleteFromFavorites() {
+            int n = list.size();
+            List<String> favorites = new ArrayList<>();
+            for (int i=0; i<n; i++) {
+                if (selector.isSelected(i, 0)) {
+                    favorites.add(list.get(i).getId());
+                }
+            }
+            favoriteConfig.delete(favorites);
+            Toast.makeText(getActivity(), R.string.msg_favorite_removed, Toast.LENGTH_SHORT).show();
+            reload();
         }
     }
 

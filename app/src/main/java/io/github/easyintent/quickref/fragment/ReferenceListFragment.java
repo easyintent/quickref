@@ -1,6 +1,7 @@
 package io.github.easyintent.quickref.fragment;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -110,21 +111,6 @@ public class ReferenceListFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        selector = new MultiSelector();
-        selectorCallback = new SelectorCallback(selector);
-    }
-
-    private void addSelectedItemsToFavorites() {
-        int n = list.size();
-        List<String> favorites = new ArrayList<>();
-        for (int i=0; i<n; i++) {
-            if (selector.isSelected(i, 0)) {
-                favorites.add(list.get(i).getId());
-            }
-        }
-        FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
-        favoriteConfig.add(favorites);
-        Toast.makeText(getActivity(), R.string.msg_favorite_saved, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -133,6 +119,9 @@ public class ReferenceListFragment extends Fragment
 
         factory = RepositoryFactory.newInstance(getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        selector = new MultiSelector();
+        selectorCallback = new SelectorCallback(getActivity(), selector);
 
         if (list == null) {
             load();
@@ -197,7 +186,9 @@ public class ReferenceListFragment extends Fragment
     private void show(List<ReferenceItem> list) {
         final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, selector, this);
         recyclerView.setAdapter(adapter);
+        selectorCallback.setList(list); // update selector list
         emptyView.setVisibility(list.size() == 0 ? View.VISIBLE : View.GONE);
+
         setListShown(true);
     }
 
@@ -236,16 +227,26 @@ public class ReferenceListFragment extends Fragment
         switcher.setDisplayedChild(shown ? 0 : 1);
     }
 
-    private class SelectorCallback extends ModalMultiSelectorCallback  {
+    private static class SelectorCallback extends ModalMultiSelectorCallback  {
 
-        public SelectorCallback(MultiSelector multiSelector) {
-            super(multiSelector);
+        private Activity activity;
+        private MultiSelector selector;
+        private List<ReferenceItem> list;
+
+        public SelectorCallback(Activity activity, MultiSelector selector) {
+            super(selector);
+            this.activity = activity;
+            this.selector = selector;
+        }
+
+        public void setList(List<ReferenceItem> list) {
+            this.list = list;
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
             super.onCreateActionMode(actionMode, menu);
-            getActivity().getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
+            activity.getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
             return true;
         }
 
@@ -260,6 +261,20 @@ public class ReferenceListFragment extends Fragment
             selector.clearSelections();
             return true;
         }
+
+        private void addSelectedItemsToFavorites() {
+            int n = list.size();
+            List<String> favorites = new ArrayList<>();
+            for (int i=0; i<n; i++) {
+                if (selector.isSelected(i, 0)) {
+                    favorites.add(list.get(i).getId());
+                }
+            }
+            FavoriteConfig favoriteConfig = new FavoriteConfig(activity);
+            favoriteConfig.add(favorites);
+            Toast.makeText(activity, R.string.msg_favorite_saved, Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 }
