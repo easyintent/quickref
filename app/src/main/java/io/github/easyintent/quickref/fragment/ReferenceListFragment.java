@@ -43,7 +43,9 @@ import static io.github.easyintent.quickref.fragment.Dialog.info;
 
 @EFragment(R.layout.fragment_reference_list)
 public class ReferenceListFragment extends Fragment
-        implements OnItemTapListener<ReferenceItem> {
+        implements
+            OnItemTapListener<ReferenceItem>,
+            ClosableFragment {
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceListFragment.class);
 
@@ -134,6 +136,7 @@ public class ReferenceListFragment extends Fragment
         }
     }
 
+    @Override
     public boolean allowBack() {
         if (selector.isSelectable()) {
             selector.clearSelections();

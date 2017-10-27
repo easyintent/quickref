@@ -22,7 +22,7 @@ import org.androidannotations.annotations.ViewById;
 import io.github.easyintent.quickref.R;
 
 @EFragment(R.layout.fragment_about)
-public class AboutFragment extends Fragment {
+public class AboutFragment extends Fragment implements ClosableFragment {
 
     @ViewById
     protected TextView versionView;
@@ -76,5 +76,10 @@ public class AboutFragment extends Fragment {
             version = "?";
         }
         versionView.setText(getString(R.string.msg_about_version, version));
+    }
+
+    @Override
+    public boolean allowBack() {
+        return true;
     }
 }

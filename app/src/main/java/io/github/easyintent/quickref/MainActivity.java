@@ -14,11 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.easyintent.quickref.fragment.AboutFragment;
+import io.github.easyintent.quickref.fragment.ClosableFragment;
 import io.github.easyintent.quickref.fragment.FavoriteListFragment;
 import io.github.easyintent.quickref.fragment.MessageDialogFragment;
 import io.github.easyintent.quickref.fragment.ReferenceListFragment;
@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity
 
     private Toolbar toolbar;
     private NavigationView navigationView;
+
+    // closable fragment on top
+    private ClosableFragment closableFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,11 @@ public class MainActivity extends AppCompatActivity
 
     private void mayPopFragment() {
         FragmentManager manager = getSupportFragmentManager();
+
+        if (!closableFragment.allowBack()) {
+            return;
+        }
+
         if (manager.getBackStackEntryCount() > 1) {
             showMainFragment();
         } else {
@@ -131,6 +139,7 @@ public class MainActivity extends AppCompatActivity
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
+        closableFragment = fragment;
     }
 
     private void showAbout() {
@@ -142,23 +151,25 @@ public class MainActivity extends AppCompatActivity
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
+        closableFragment = fragment;
+
     }
 
     private void initFragment() {
         FragmentManager manager = getSupportFragmentManager();
         ReferenceListFragment fragment = (ReferenceListFragment) manager.findFragmentByTag("reference_list");
-        if (fragment != null) {
-            return;
+
+        if (fragment == null) {
+            // show main reference list
+            fragment = ReferenceListFragment.newListChildrenInstance(null);
+            manager.beginTransaction()
+                    .replace(R.id.content_frame, fragment, "reference_list")
+                    .addToBackStack("main")
+                    .commit();
         }
 
-        // show main reference list
-        fragment = ReferenceListFragment.newListChildrenInstance(null);
-        manager.beginTransaction()
-                .replace(R.id.content_frame, fragment, "reference_list")
-                .addToBackStack("main")
-                .commit();
-
         navigationView.setCheckedItem(R.id.nav_all);
+        closableFragment = fragment;
     }
 
     @Override
@@ -167,6 +178,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showMainFragment() {
+
         setTitle(getString(R.string.app_name));
         getSupportFragmentManager()
                 .popBackStack("main", 0);

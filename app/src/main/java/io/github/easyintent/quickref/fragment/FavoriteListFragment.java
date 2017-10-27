@@ -35,7 +35,7 @@ import io.github.easyintent.quickref.repository.RepositoryFactory;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
 
 @EFragment
-public class FavoriteListFragment extends ListFragment {
+public class FavoriteListFragment extends ListFragment implements ClosableFragment {
 
     private static final Logger logger  = LoggerFactory.getLogger(FavoriteListFragment.class);
 
@@ -130,6 +130,11 @@ public class FavoriteListFragment extends ListFragment {
     private void reload() {
         setListShown(false);
         loadList(factory, favoriteConfig);
+    }
+
+    @Override
+    public boolean allowBack() {
+        return true;
     }
 
     private class MultiModeCallback implements ListView.MultiChoiceModeListener {
