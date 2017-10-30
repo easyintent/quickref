@@ -64,9 +64,9 @@ public class ReferenceRecyclerAdapter extends RecyclerView.Adapter<ReferenceRecy
 
             setSelectionModeBackgroundDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.list_item));
 
-            title = (TextView) itemView.findViewById(R.id.title_view);
-            detail = (TextView) itemView.findViewById(R.id.detail_view);
-            command = (TextView) itemView.findViewById(R.id.command_view);
+            title = itemView.findViewById(R.id.title_view);
+            detail = itemView.findViewById(R.id.detail_view);
+            command = itemView.findViewById(R.id.command_view);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

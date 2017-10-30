@@ -180,7 +180,7 @@ public class ReferenceListFragment extends Fragment
     @IgnoreWhen(IgnoreWhen.State.DETACHED)
     protected void onLoadDone(boolean success, List<ReferenceItem> newList, String message) {
         if (!success) {
-            info((AppCompatActivity) getActivity(), "load_list_error", message);
+            info(getFragmentManager(), "load_list_error", message);
             return;
         }
         show(newList);
@@ -207,7 +207,7 @@ public class ReferenceListFragment extends Fragment
     }
 
     private void showDetail(ReferenceItem referenceItem) {
-
+        // nothing to do
     }
 
     private void showList(ReferenceItem referenceItem) {
