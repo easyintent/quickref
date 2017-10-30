@@ -30,7 +30,6 @@ import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
@@ -40,6 +39,7 @@ import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
+import io.github.easyintent.quickref.util.ReferenceListSelection;
 
 import static io.github.easyintent.quickref.fragment.Dialog.info;
 
@@ -269,18 +269,11 @@ public class ReferenceListFragment extends Fragment
         }
 
         private void addSelectedItemsToFavorites() {
-            int n = list.size();
-            List<String> favorites = new ArrayList<>();
-            for (int i=0; i<n; i++) {
-                if (selector.isSelected(i, 0)) {
-                    favorites.add(list.get(i).getId());
-                }
-            }
+            List<String> favorites = ReferenceListSelection.getSelectedIds(list, selector);
             FavoriteConfig favoriteConfig = new FavoriteConfig(activity);
             favoriteConfig.add(favorites);
             Toast.makeText(activity, R.string.msg_favorite_saved, Toast.LENGTH_SHORT).show();
         }
-
     }
 
 }

@@ -28,7 +28,6 @@ import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +38,7 @@ import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
+import io.github.easyintent.quickref.util.ReferenceListSelection;
 
 @EFragment(R.layout.fragment_favorites)
 public class FavoriteListFragment extends Fragment
@@ -209,13 +209,7 @@ public class FavoriteListFragment extends Fragment
         }
 
         private void deleteFromFavorites() {
-            int n = list.size();
-            List<String> favorites = new ArrayList<>();
-            for (int i=0; i<n; i++) {
-                if (selector.isSelected(i, 0)) {
-                    favorites.add(list.get(i).getId());
-                }
-            }
+            List<String> favorites = ReferenceListSelection.getSelectedIds(list, selector);
             favoriteConfig.delete(favorites);
             Toast.makeText(getActivity(), R.string.msg_favorite_removed, Toast.LENGTH_SHORT).show();
             reload();
