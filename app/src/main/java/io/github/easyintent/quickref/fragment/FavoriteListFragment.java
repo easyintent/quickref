@@ -3,6 +3,7 @@ package io.github.easyintent.quickref.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -14,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
@@ -211,7 +211,7 @@ public class FavoriteListFragment extends Fragment
         private void deleteFromFavorites() {
             List<String> favorites = ReferenceListSelection.getSelectedIds(list, selector);
             favoriteConfig.delete(favorites);
-            Toast.makeText(getActivity(), R.string.msg_favorite_removed, Toast.LENGTH_SHORT).show();
+            Snackbar.make(switcher, R.string.msg_favorite_removed, Snackbar.LENGTH_SHORT).show();
             reload();
         }
     }
