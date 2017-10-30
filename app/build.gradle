@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
     defaultConfig {
         applicationId "io.github.easyintent.quickref"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 6
         versionName "0.5.0-git"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -45,22 +44,21 @@ ext {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:cardview-v7:26.1.0'
 
-    compile "org.androidannotations:androidannotations-api:$aaVersion"
-    compile ('commons-io:commons-io:2.4') {  transitive = false  }
-    compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
-    compile 'org.slf4j:slf4j-api:1.7.22'
-    compile 'eu.lp0.slf4j:slf4j-android:1.7.22-0'
+    implementation "org.androidannotations:androidannotations-api:$aaVersion"
+    implementation ('commons-io:commons-io:2.4') {  transitive = false  }
+    implementation 'com.bignerdranch.android:recyclerview-multiselect:0.2'
+    implementation 'eu.lp0.slf4j:slf4j-android:1.7.22-0'
 
     annotationProcessor "org.androidannotations:androidannotations:$aaVersion"
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.3.1'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:3.3.1'
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
