@@ -24,6 +24,6 @@ class SqliteRepositoryFactory extends RepositoryFactory {
     @NonNull
     @Override
     public ReferenceRepository createCategoryRepository() {
-        return new SqliteReferenceRepository(context);
+        return new SqliteReferenceRepository(context, new AssetsDbFileLocator(context));
     }
 }

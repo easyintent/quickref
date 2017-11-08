@@ -26,7 +26,7 @@ public class SqliteRepositoryTest {
     public void setUp() {
         // test from known data
         Context context = RuntimeEnvironment.application;
-        repository = new SqliteReferenceRepository(context);
+        repository = new SqliteReferenceRepository(context, new AssetsDbFileLocator(context));
     }
 
     @Test
