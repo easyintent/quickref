@@ -1,12 +1,12 @@
 package io.github.easyintent.quickref.config;
 
 import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,14 +14,14 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class FavoriteTest {
 
     private FavoriteConfig favoriteConfig;
 
     @Before
     public void setUp() {
-        Context context = RuntimeEnvironment.application;
+        Context context = InstrumentationRegistry.getTargetContext();
         favoriteConfig = new FavoriteConfig(context);
         favoriteConfig.clear();
     }
