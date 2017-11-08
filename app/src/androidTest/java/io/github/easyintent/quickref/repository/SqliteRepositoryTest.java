@@ -1,23 +1,31 @@
 package io.github.easyintent.quickref.repository;
 
 import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import io.github.easyintent.quickref.data.ReferenceItem;
 
+import static junit.framework.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class SqliteRepositoryTest {
 
     private ReferenceRepository repository;
@@ -25,8 +33,14 @@ public class SqliteRepositoryTest {
     @Before
     public void setUp() {
         // test from known data
-        Context context = RuntimeEnvironment.application;
-        repository = new SqliteReferenceRepository(context, new AssetsDbFileLocator(context));
+
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        Context testContext = InstrumentationRegistry.getContext();
+
+        File dbFile = prepareDbFile(targetContext, testContext);
+
+        DbFileLocator locator = new SimpleDbFileLocator(dbFile);
+        repository = new SqliteReferenceRepository(targetContext, locator);
     }
 
     @Test
@@ -64,12 +78,31 @@ public class SqliteRepositoryTest {
 
     @Test
     public void testSearch() throws Exception {
-        String query = "2-2";
+        String query = "summary";
         List<ReferenceItem> list = repository.search(query);
         List<String> ids = new ArrayList<>();
         for (ReferenceItem item: list) {
             ids.add(item.getId());
         }
-        assertThat(ids.contains("8876c244-6fc1-42b1-816b-7bcef2cfada3"), is(true));
+        assertThat(ids, containsInAnyOrder(
+                "c6ed7517-1f1e-4745-bd62-e6306283c7cf",
+                "06edc567-65a2-4376-a735-2192e06600a0"));
+    }
+
+    private File prepareDbFile(Context targetContext, Context testContext) {
+        OutputStream os = null;
+        InputStream is = null;
+        File dbFile = new File(targetContext.getCacheDir(),"fortest.db");
+        try {
+            is = testContext.getAssets().open("quickref.sqlite");
+            os = new FileOutputStream(dbFile);
+            IOUtils.copy(is, os);
+        } catch (IOException e) {
+            fail("Can not create db");
+        } finally {
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(os);
+        }
+        return dbFile;
     }
 }
