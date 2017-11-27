@@ -14,11 +14,23 @@ the quick reference document itself (the cheat sheet) visit
 [quickref-document](https://github.com/easyintent/quickref-document)
 repository.
 
+Note that, this application is not trying to be git complete reference.
+For complete documentation, detailed explaination, and other resources,
+please visit the official [git documentation](https://git-scm.com/doc).
+
 
 | <img src="images/screenshot-1.png" width="220px" alt="Main Page" /> | <img src="images/screenshot-2.png" width="220px" alt="Reference List" /> | <img src="images/screenshot-3.png" width="220px" alt="Search" /> |
 |:---------:|:--------------:|:---------:|
 | Main Page | Reference List | Search    |
 
+
+# Language and Translations
+
+For simplicity, the application and 
+[content](https://github.com/easyintent/quickref-document) 
+will only available in English.
+But I am not native English speaker, any report about grammatical
+error and misspelling would be appreciated.
 
 # License
 
