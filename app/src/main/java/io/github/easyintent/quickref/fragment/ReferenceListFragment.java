@@ -30,7 +30,7 @@ import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
-import io.github.easyintent.quickref.adapter.ReferenceRecyclerAdapter;
+import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
@@ -44,7 +44,7 @@ import static io.github.easyintent.quickref.fragment.Dialog.info;
 @EFragment(R.layout.fragment_reference_list)
 public class ReferenceListFragment extends Fragment
         implements
-            OnItemTapListener<ReferenceItem>,
+        AdapterListener<ReferenceItem>,
             ClosableFragment {
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceListFragment.class);
@@ -73,7 +73,7 @@ public class ReferenceListFragment extends Fragment
     private RepositoryFactory factory;
     private List<ReferenceItem> list;
 
-    private ReferenceRecyclerAdapter adapter;
+    private ReferenceItemAdapter adapter;
 
     /** Create list of reference fragment.
      *
@@ -178,7 +178,7 @@ public class ReferenceListFragment extends Fragment
     }
 
     private void show(List<ReferenceItem> list) {
-        adapter = new ReferenceRecyclerAdapter(list, this);
+        adapter = new ReferenceItemAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
         boolean hasContent = list.size() > 0;

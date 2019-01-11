@@ -1,7 +1,7 @@
 package io.github.easyintent.quickref.fragment;
 
 
-public interface OnItemTapListener<T> {
+public interface AdapterListener<T> {
     void onItemTap(T item, int index);
     void onMultiSelectionStart();
 }

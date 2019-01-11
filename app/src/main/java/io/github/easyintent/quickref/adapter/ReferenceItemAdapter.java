@@ -16,19 +16,19 @@ import java.util.Set;
 
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.data.ReferenceItem;
-import io.github.easyintent.quickref.fragment.OnItemTapListener;
+import io.github.easyintent.quickref.fragment.AdapterListener;
 
-public class ReferenceRecyclerAdapter extends RecyclerView.Adapter<ReferenceRecyclerAdapter.ViewHolder> {
+public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdapter.ViewHolder> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReferenceRecyclerAdapter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReferenceItemAdapter.class);
 
     private List<ReferenceItem> list;
     private Set<ReferenceItem> selectedItems;
-    private OnItemTapListener<ReferenceItem> listener;
+    private AdapterListener<ReferenceItem> listener;
 
     private boolean selectionMode;
 
-    public ReferenceRecyclerAdapter(List<ReferenceItem> list, OnItemTapListener<ReferenceItem> listener) {
+    public ReferenceItemAdapter(List<ReferenceItem> list, AdapterListener<ReferenceItem> listener) {
         this.list = list;
         this.listener = listener;
         selectedItems = new LinkedHashSet<>();

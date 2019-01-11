@@ -30,7 +30,7 @@ import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
-import io.github.easyintent.quickref.adapter.ReferenceRecyclerAdapter;
+import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
@@ -42,7 +42,7 @@ import io.github.easyintent.quickref.util.ReferenceListSelection;
 public class FavoriteListFragment extends Fragment
         implements
             ClosableFragment,
-            OnItemTapListener<ReferenceItem> {
+            AdapterListener<ReferenceItem> {
 
     private static final Logger logger  = LoggerFactory.getLogger(FavoriteListFragment.class);
 
@@ -62,7 +62,7 @@ public class FavoriteListFragment extends Fragment
     private FavoriteConfig favoriteConfig;
     private List<ReferenceItem> list;
 
-    private ReferenceRecyclerAdapter adapter;
+    private ReferenceItemAdapter adapter;
 
     public static FavoriteListFragment newInstance() {
         Bundle args = new Bundle();
@@ -124,7 +124,7 @@ public class FavoriteListFragment extends Fragment
     }
 
     protected void show(List<ReferenceItem> list) {
-        adapter = new ReferenceRecyclerAdapter(list, this);
+        adapter = new ReferenceItemAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
         boolean hasContent = list.size() > 0;
