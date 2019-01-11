@@ -129,10 +129,7 @@ public class ReferenceListFragment extends Fragment
 
     @Override
     public boolean allowBack() {
-        if (adapter == null || !adapter.isSelectionMode()) {
-            return true;
-        }
-        return false;
+        return adapter == null || !adapter.isSelectionMode();
     }
 
     private void load() {
@@ -269,7 +266,6 @@ public class ReferenceListFragment extends Fragment
                 return;
             }
             List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
-            logger.debug("Selected items: {}", adapter.getSelectedItems());
 
             FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
             favoriteConfig.add(favorites);

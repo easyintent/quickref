@@ -110,7 +110,7 @@ public class FavoriteListFragment extends Fragment
             onLoadDone(true, newData, null);
         } catch (RepositoryException e) {
             logger.debug("Failed to get list", e);
-            onLoadDone(false, Collections.<ReferenceItem>emptyList(), e.getMessage());
+            onLoadDone(false, Collections.emptyList(), e.getMessage());
         }
     }
 
@@ -159,10 +159,7 @@ public class FavoriteListFragment extends Fragment
 
     @Override
     public boolean allowBack() {
-        if (adapter == null || !adapter.isSelectionMode()) {
-            return true;
-        }
-        return false;
+        return adapter == null || !adapter.isSelectionMode();
     }
 
     @Override
