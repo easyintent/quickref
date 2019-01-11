@@ -63,6 +63,7 @@ public class FavoriteListFragment extends Fragment
     private List<ReferenceItem> list;
 
     private ReferenceItemAdapter adapter;
+    private ActionMode selectionMode;
 
     public static FavoriteListFragment newInstance() {
         Bundle args = new Bundle();
@@ -177,12 +178,18 @@ public class FavoriteListFragment extends Fragment
         adapter.startSelectionMode();
     }
 
+    @Override
+    public void onSelectedItemsChanged() {
+        selectionMode.setTitle(String.valueOf(adapter.getSelectedItemCount()));
+    }
+
     private class SelectorCallback implements ActionMode.Callback  {
 
 
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
             getActivity().getMenuInflater().inflate(R.menu.fragment_favorite_select, menu);
+            selectionMode = actionMode;
             return true;
         }
 
@@ -207,6 +214,7 @@ public class FavoriteListFragment extends Fragment
             if (adapter != null) {
                 adapter.endSelectionMode();
             }
+            selectionMode = null;
         }
 
         private void deleteFromFavorites() {

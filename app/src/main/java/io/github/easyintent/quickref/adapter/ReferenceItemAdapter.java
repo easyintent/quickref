@@ -60,9 +60,8 @@ public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdap
         return Collections.unmodifiableSet(selectedItems);
     }
 
-    public void clearSelection() {
-        selectedItems.clear();
-        notifyDataSetChanged();
+    public int getSelectedItemCount() {
+        return selectedItems.size();
     }
 
     public void startSelectionMode() {
@@ -78,11 +77,16 @@ public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdap
 
     private void addItemSelection(ReferenceItem item) {
         selectedItems.add(item);
-        notifyDataSetChanged();
+        onSelectedItemsChanges();
     }
 
     private void removeItemSelection(ReferenceItem item) {
         selectedItems.remove(item);
+        onSelectedItemsChanges();
+    }
+
+    private void onSelectedItemsChanges() {
+        listener.onSelectedItemsChanged();
         notifyDataSetChanged();
     }
 
@@ -124,7 +128,6 @@ public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdap
             updateSelectionOverlay(item);
         }
 
-
         private void updateSelectionOverlay(ReferenceItem item) {
             if (selectionMode && isSelected(item)) {
                 selectionOverlay.setVisibility(View.VISIBLE);
@@ -137,7 +140,6 @@ public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdap
         public void onClick(View view) {
             if (selectionMode) {
                 addOrRemoveItem();
-                logger.debug("Selected items: {}", selectedItems);
             } else {
                 int pos = getLayoutPosition();
                 listener.onItemTap(list.get(pos), pos);

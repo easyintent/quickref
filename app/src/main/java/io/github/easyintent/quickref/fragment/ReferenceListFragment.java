@@ -74,6 +74,7 @@ public class ReferenceListFragment extends Fragment
     private List<ReferenceItem> list;
 
     private ReferenceItemAdapter adapter;
+    private ActionMode selectionActionMode;
 
     /** Create list of reference fragment.
      *
@@ -220,6 +221,11 @@ public class ReferenceListFragment extends Fragment
         adapter.startSelectionMode();
     }
 
+    @Override
+    public void onSelectedItemsChanged() {
+        selectionActionMode.setTitle(String.valueOf(adapter.getSelectedItemCount()));
+    }
+
     private void setListShown(boolean shown) {
         switcher.setDisplayedChild(shown ? 0 : 1);
     }
@@ -229,6 +235,7 @@ public class ReferenceListFragment extends Fragment
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
             getActivity().getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
+            selectionActionMode = actionMode;
             return true;
         }
 
@@ -243,6 +250,7 @@ public class ReferenceListFragment extends Fragment
             if (adapter != null) {
                 adapter.endSelectionMode();
             }
+            selectionActionMode = null;
         }
 
         @Override
