@@ -45,14 +45,9 @@ public class FavoriteListFragment extends Fragment
 
     private static final Logger logger  = LoggerFactory.getLogger(FavoriteListFragment.class);
 
-    @ViewById
-    protected RecyclerView recyclerView;
-
-    @ViewById
-    protected TextView emptyView;
-
-    @ViewById
-    protected ViewSwitcher switcher;
+    @ViewById protected RecyclerView recyclerView;
+    @ViewById protected TextView emptyView;
+    @ViewById protected ViewSwitcher switcher;
 
     private RepositoryFactory factory;
     private FavoriteConfig favoriteConfig;

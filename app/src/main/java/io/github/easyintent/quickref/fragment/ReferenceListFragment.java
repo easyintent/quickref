@@ -48,23 +48,14 @@ public class ReferenceListFragment extends Fragment
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceListFragment.class);
 
-    @FragmentArg
-    protected String parentId;
+    @FragmentArg protected String parentId;
+    @FragmentArg protected String query;
+    @FragmentArg protected boolean searchMode;
 
-    @FragmentArg
-    protected String query;
+    @ViewById protected RecyclerView recyclerView;
+    @ViewById protected View emptyView;
 
-    @FragmentArg
-    protected boolean searchMode;
-
-    @ViewById
-    protected RecyclerView recyclerView;
-
-    @ViewById
-    protected View emptyView;
-
-    @ViewById
-    protected ViewSwitcher switcher;
+    @ViewById protected ViewSwitcher switcher;
 
     private RepositoryFactory factory;
     private List<ReferenceItem> list;

@@ -24,8 +24,7 @@ import io.github.easyintent.quickref.R;
 @EFragment(R.layout.fragment_about)
 public class AboutFragment extends Fragment implements ClosableFragment {
 
-    @ViewById
-    protected TextView versionView;
+    @ViewById protected TextView versionView;
 
     public static AboutFragment newInstance() {
         Bundle args = new Bundle();

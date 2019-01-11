@@ -20,14 +20,9 @@ import io.github.easyintent.quickref.fragment.ReferenceListFragment;
 public class QuickRefActivity extends AppCompatActivity
         implements MessageDialogFragment.Listener {
 
-    @Extra
-    protected String title;
-
-    @Extra
-    protected String parentId;
-
-    @Extra
-    protected String query;
+    @Extra protected String title;
+    @Extra protected String parentId;
+    @Extra protected String query;
 
     private Toolbar toolbar;
 
