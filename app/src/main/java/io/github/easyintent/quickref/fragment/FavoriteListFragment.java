@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -54,9 +53,6 @@ public class FavoriteListFragment extends Fragment
 
     @ViewById
     protected ViewSwitcher switcher;
-
-    @ViewById
-    protected CardView cardView;
 
     private RepositoryFactory factory;
     private FavoriteConfig favoriteConfig;
@@ -130,7 +126,7 @@ public class FavoriteListFragment extends Fragment
 
         boolean hasContent = list.size() > 0;
         emptyView.setVisibility(hasContent ? View.GONE : View.VISIBLE);
-        cardView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
+        recyclerView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
 
         setListShown(true);
     }
