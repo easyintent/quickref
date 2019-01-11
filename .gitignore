@@ -8,3 +8,8 @@
 .gradle
 .DS_Store
 .externalNativeBuild
+
+# exclude release key and signing information
+release-key.jks
+release-key.properties
+

@@ -1,4 +1,41 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.application'
+
+/**
+ * Put release keystore as `release-key.jks` and the signing information
+ * as `release-key.properties` on project directory
+ * (both files already listed on project .gitignore).
+ *
+ * The `release-key.properties` contains:
+ *
+ *      storePassword=****
+ *      keyAlias=alias_name
+ *      keyPassword=****
+ *
+ *  Then build release apk with
+ *
+ *      gradle clean assembleRelease
+ *
+ *  The signed apk should be in the `app/build/outputs/apk` directory.
+ *
+ *  Both release key and signing information should not committed
+ *  to the git repository.
+ *
+ */
+def keyStoreFile = rootProject.file("release-key.jks")
+def keyPropsFile = rootProject.file("release-key.properties")
+
+def keyProps = new Properties()
+if (keyPropsFile.exists()) {
+    keyPropsFile.withInputStream { stream ->
+        keyProps.load(stream)
+    }
+}
+
+def dateFormat = new SimpleDateFormat('yyyyMMddHHmm')
+def developmentVersionSuffix = dateFormat.format(new Date())
+
 
 android {
     compileSdkVersion 28
@@ -7,7 +44,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 6
-        versionName "0.5.0-git"
+        versionName "0.5.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
@@ -17,10 +54,29 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile keyStoreFile
+            storePassword keyProps['storePassword']
+            keyAlias keyProps['keyAlias']
+            keyPassword keyProps['keyPassword']
+        }
+    }
+
     buildTypes {
+        debug {
+            minifyEnabled false
+            versionNameSuffix "-debug"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            // see signingConfig above
+            signingConfig signingConfigs.release
+
+            // comment below line when actually release new version
+            versionNameSuffix "-git-$developmentVersionSuffix"
         }
     }
 
@@ -43,7 +99,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
 }
 
 def supportVersion = '28.0.0'
