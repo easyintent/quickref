@@ -17,9 +17,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
-import com.bignerdranch.android.multiselector.MultiSelector;
-
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.IgnoreWhen;
@@ -65,8 +62,7 @@ public class FavoriteListFragment extends Fragment
     private FavoriteConfig favoriteConfig;
     private List<ReferenceItem> list;
 
-    private MultiSelector selector;
-    private SelectorCallback selectorCallback;
+    private ReferenceRecyclerAdapter adapter;
 
     public static FavoriteListFragment newInstance() {
         Bundle args = new Bundle();
@@ -91,8 +87,6 @@ public class FavoriteListFragment extends Fragment
         factory = RepositoryFactory.newInstance(getActivity());
         favoriteConfig = new FavoriteConfig(getActivity());
 
-        selector = new MultiSelector();
-        selectorCallback = new SelectorCallback(selector);
     }
 
     @Override
@@ -130,7 +124,7 @@ public class FavoriteListFragment extends Fragment
     }
 
     protected void show(List<ReferenceItem> list) {
-        final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, selector, this);
+        adapter = new ReferenceRecyclerAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
         boolean hasContent = list.size() > 0;
@@ -164,11 +158,9 @@ public class FavoriteListFragment extends Fragment
 
     @Override
     public boolean allowBack() {
-        if (!selector.isSelectable()) {
+        if (adapter == null || !adapter.isSelectionMode()) {
             return true;
         }
-        selector.clearSelections();
-        selector.setSelectable(false);
         return false;
     }
 
@@ -181,38 +173,51 @@ public class FavoriteListFragment extends Fragment
 
     @Override
     public void onMultiSelectionStart() {
-        ((AppCompatActivity) getActivity()).startSupportActionMode(selectorCallback);
+        ((AppCompatActivity) getActivity()).startSupportActionMode(new SelectorCallback());
+        adapter.startSelectionMode();
     }
 
-    private class SelectorCallback extends ModalMultiSelectorCallback {
+    private class SelectorCallback implements ActionMode.Callback  {
 
-        public SelectorCallback(MultiSelector multiSelector) {
-            super(multiSelector);
-        }
 
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-            super.onCreateActionMode(actionMode, menu);
             getActivity().getMenuInflater().inflate(R.menu.fragment_favorite_select, menu);
             return true;
         }
 
         @Override
+        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+            return false;
+        }
+
+        @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            mode.finish();
             switch (item.getItemId()) {
                 case R.id.delete_favorite:
                     deleteFromFavorites();
                     break;
             }
-            selector.clearSelections();
+            mode.finish();
             return true;
         }
 
+        @Override
+        public void onDestroyActionMode(ActionMode actionMode) {
+            if (adapter != null) {
+                adapter.endSelectionMode();
+            }
+        }
+
         private void deleteFromFavorites() {
-            List<String> favorites = ReferenceListSelection.getSelectedIds(list, selector);
+            if (adapter == null) {
+                return;
+            }
+
+            List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
             favoriteConfig.delete(favorites);
             Snackbar.make(switcher, R.string.msg_favorite_removed, Snackbar.LENGTH_SHORT).show();
+
             reload();
         }
     }

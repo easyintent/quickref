@@ -56,7 +56,6 @@ dependencies {
 
     implementation "org.androidannotations:androidannotations-api:$aaVersion"
     implementation ('commons-io:commons-io:2.4') {  transitive = false  }
-    implementation 'com.bignerdranch.android:recyclerview-multiselect:0.2'
     implementation 'eu.lp0.slf4j:slf4j-android:1.7.22-0'
 
     annotationProcessor "org.androidannotations:androidannotations:$aaVersion"

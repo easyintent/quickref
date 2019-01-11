@@ -16,5 +16,7 @@
     <color name="item_selected">#aaa</color>
     <color name="item_title">@color/text_title</color>
 
+    <color name="selection_overlay">#55000000</color>
+
 
 </resources>

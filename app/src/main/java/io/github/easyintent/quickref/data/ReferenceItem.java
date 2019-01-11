@@ -84,4 +84,31 @@ public class ReferenceItem {
     public void setLeaf(boolean leaf) {
         this.leaf = leaf;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReferenceItem that = (ReferenceItem) o;
+
+        if (leaf != that.leaf) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (parentId != null ? !parentId.equals(that.parentId) : that.parentId != null)
+            return false;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (summary != null ? !summary.equals(that.summary) : that.summary != null) return false;
+        return command != null ? command.equals(that.command) : that.command == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (parentId != null ? parentId.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (summary != null ? summary.hashCode() : 0);
+        result = 31 * result + (command != null ? command.hashCode() : 0);
+        result = 31 * result + (leaf ? 1 : 0);
+        return result;
+    }
 }

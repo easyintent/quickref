@@ -17,9 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ViewSwitcher;
 
-import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
-import com.bignerdranch.android.multiselector.MultiSelector;
-
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
@@ -76,8 +73,7 @@ public class ReferenceListFragment extends Fragment
     private RepositoryFactory factory;
     private List<ReferenceItem> list;
 
-    private MultiSelector selector;
-    private SelectorCallback selectorCallback;
+    private ReferenceRecyclerAdapter adapter;
 
     /** Create list of reference fragment.
      *
@@ -123,9 +119,6 @@ public class ReferenceListFragment extends Fragment
         factory = RepositoryFactory.newInstance(getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        selector = new MultiSelector();
-        selectorCallback = new SelectorCallback(selector);
-
         if (list == null) {
             load();
         } else {
@@ -135,11 +128,9 @@ public class ReferenceListFragment extends Fragment
 
     @Override
     public boolean allowBack() {
-        if (!selector.isSelectable()) {
+        if (adapter == null || !adapter.isSelectionMode()) {
             return true;
         }
-        selector.clearSelections();
-        selector.setSelectable(false);
         return false;
     }
 
@@ -187,7 +178,7 @@ public class ReferenceListFragment extends Fragment
     }
 
     private void show(List<ReferenceItem> list) {
-        final ReferenceRecyclerAdapter adapter = new ReferenceRecyclerAdapter(list, selector, this);
+        adapter = new ReferenceRecyclerAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
         boolean hasContent = list.size() > 0;
@@ -225,40 +216,53 @@ public class ReferenceListFragment extends Fragment
 
     @Override
     public void onMultiSelectionStart() {
-        ((AppCompatActivity) getActivity()).startSupportActionMode(selectorCallback);
+        ((AppCompatActivity) getActivity()).startSupportActionMode(new SelectorCallback());
+        adapter.startSelectionMode();
     }
 
     private void setListShown(boolean shown) {
         switcher.setDisplayedChild(shown ? 0 : 1);
     }
 
-    private class SelectorCallback extends ModalMultiSelectorCallback  {
-
-        public SelectorCallback(MultiSelector selector) {
-            super(selector);
-        }
+    private class SelectorCallback implements ActionMode.Callback {
 
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-            super.onCreateActionMode(actionMode, menu);
             getActivity().getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
             return true;
         }
 
         @Override
+        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+            return false;
+        }
+
+
+        @Override
+        public void onDestroyActionMode(ActionMode actionMode) {
+            if (adapter != null) {
+                adapter.endSelectionMode();
+            }
+        }
+
+        @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            mode.finish();
             switch (item.getItemId()) {
                 case R.id.add_favorite:
                     addSelectedItemsToFavorites();
                     break;
             }
-            selector.clearSelections();
+            mode.finish();
             return true;
         }
 
         private void addSelectedItemsToFavorites() {
-            List<String> favorites = ReferenceListSelection.getSelectedIds(list, selector);
+            if (adapter == null) {
+                return;
+            }
+            List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
+            logger.debug("Selected items: {}", adapter.getSelectedItems());
+
             FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
             favoriteConfig.add(favorites);
             Snackbar.make(switcher, R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
