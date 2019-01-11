@@ -1,4 +1,4 @@
-package io.github.easyintent.quickref.fragment;
+package io.github.easyintent.quickref.adapter;
 
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +14,7 @@ import java.util.List;
 
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.data.ReferenceItem;
+import io.github.easyintent.quickref.fragment.OnItemTapListener;
 
 public class ReferenceRecyclerAdapter extends RecyclerView.Adapter<ReferenceRecyclerAdapter.ViewHolder> {
 

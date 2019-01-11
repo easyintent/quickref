@@ -33,6 +33,7 @@ import java.util.List;
 
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
+import io.github.easyintent.quickref.adapter.ReferenceRecyclerAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.data.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
