@@ -149,7 +149,7 @@ public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdap
         private void addOrRemoveItem() {
             int i = getLayoutPosition();
             ReferenceItem item = list.get(i);
-            if (isSelected(item)) {
+            if (isSelected(item) && getSelectedItemCount() > 1) {
                 removeItemSelection(item);
             } else {
                 addItemSelection(item);
