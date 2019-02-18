@@ -49,7 +49,10 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = ["classSuffix": "Ex"]
+                arguments = [
+                    "classSuffix": "Ex",
+                    "resourcePackageName": android.defaultConfig.applicationId
+                ]
             }
         }
     }
@@ -102,7 +105,7 @@ android {
 }
 
 def supportVersion = '28.0.0'
-def aaVersion = '4.5.2'
+def aaVersion = '4.6.0'
 
 dependencies {
     implementation "com.android.support:appcompat-v7:$supportVersion"
