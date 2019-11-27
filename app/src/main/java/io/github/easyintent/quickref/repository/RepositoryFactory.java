@@ -2,7 +2,7 @@ package io.github.easyintent.quickref.repository;
 
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public abstract class RepositoryFactory {
     public static RepositoryFactory newInstance(Context context) {

@@ -1,8 +1,8 @@
 package io.github.easyintent.quickref.fragment;
 
 
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
 
 public final class Dialog {
 

@@ -45,7 +45,7 @@ android {
         targetSdkVersion 27
         versionCode 7
         versionName "0.6.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -108,9 +108,9 @@ def supportVersion = '28.0.0'
 def aaVersion = '4.6.0'
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$supportVersion"
-    implementation "com.android.support:design:$supportVersion"
-    implementation "com.android.support:cardview-v7:$supportVersion"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
 
     implementation "org.androidannotations:androidannotations-api:$aaVersion"
     implementation ('commons-io:commons-io:2.4') {  transitive = false  }
@@ -120,7 +120,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
