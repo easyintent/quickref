@@ -38,11 +38,11 @@ def developmentVersionSuffix = dateFormat.format(new Date())
 
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "io.github.easyintent.quickref"
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 7
         versionName "0.6.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -104,11 +104,10 @@ android {
     }
 }
 
-def supportVersion = '28.0.0'
 def aaVersion = '4.6.0'
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
