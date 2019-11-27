@@ -1,6 +1,8 @@
 package io.github.easyintent.quickref.repository;
 
 import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -34,8 +36,8 @@ public class SqliteRepositoryTest {
     public void setUp() {
         // test from known data
 
-        Context targetContext = InstrumentationRegistry.getTargetContext();
-        Context testContext = InstrumentationRegistry.getContext();
+        Context targetContext = ApplicationProvider.getApplicationContext();
+        Context testContext = InstrumentationRegistry.getInstrumentation().getContext();
 
         File dbFile = prepareDbFile(targetContext, testContext);
 
