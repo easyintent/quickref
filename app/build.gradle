@@ -43,8 +43,8 @@ android {
         applicationId "io.github.easyintent.quickref"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 7
-        versionName "0.6.0"
+        versionCode 8
+        versionName "0.6.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
@@ -79,7 +79,7 @@ android {
             signingConfig signingConfigs.release
 
             // comment below line when actually release new version
-            // versionNameSuffix "-git-$developmentVersionSuffix"
+            versionNameSuffix "-git-$developmentVersionSuffix"
         }
     }
 
