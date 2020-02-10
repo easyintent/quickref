@@ -1,3 +1,2 @@
 Git quick reference application for android. Showing "git cheat sheet" on the go. It work without internet connection. Currently it does not requires any permissions.
-
-Note that, this application is not trying to be git complete reference. For complete documentation, detailed explaination, and other resources, please visit the official git documentation.
+Note that, this application is not trying to be git complete reference. For complete documentation, detailed explaination, and other resources, please visit the official git documentation (https://git-scm.com/doc).
