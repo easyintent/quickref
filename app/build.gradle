@@ -79,7 +79,7 @@ android {
             signingConfig signingConfigs.release
 
             // comment below line when actually release new version
-            versionNameSuffix "-git-$developmentVersionSuffix"
+            // versionNameSuffix "-git-$developmentVersionSuffix"
         }
     }
 
