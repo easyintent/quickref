@@ -19,7 +19,7 @@ For complete documentation, detailed explaination, and other resources,
 please visit the official [git documentation](https://git-scm.com/doc).
 
 
-| <img src="images/screenshot-1.png" width="220px" alt="Main Page" /> | <img src="images/screenshot-2.png" width="220px" alt="Reference List" /> | <img src="images/screenshot-3.png" width="220px" alt="Search" /> |
+| <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/001-screenshot.png" width="220px" alt="Main Page" /> | <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/002-screenshot.png" width="220px" alt="Reference List" /> | <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/003-screenshot.png" width="220px" alt="Search" /> |
 |:---------:|:--------------:|:---------:|
 | Main Page | Reference List | Search    |
 
