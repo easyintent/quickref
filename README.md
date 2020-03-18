@@ -1,13 +1,16 @@
 # Git Quick Reference
 
-<a href='https://play.google.com/store/apps/details?id=io.github.easyintent.quickref'>
- <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width="240px"/>
-</a>
-
 Git quick reference application for android.
 Showing "git cheat sheet" on the go.
 It work without internet connection.
 Currently it does not requires any permissions.
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/io.github.easyintent.quickref/)
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=io.github.easyintent.quickref)
 
 This repository is for the android application. For
 the quick reference document itself (the cheat sheet) visit
