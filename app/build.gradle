@@ -108,11 +108,11 @@ def aaVersion = '4.7.0'
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
     implementation "org.androidannotations:androidannotations-api:$aaVersion"
-    implementation ('commons-io:commons-io:2.4') {  transitive = false  }
+    implementation ('commons-io:commons-io:2.5') {  transitive = false  }
     implementation 'eu.lp0.slf4j:slf4j-android:1.7.22-0'
 
     annotationProcessor "org.androidannotations:androidannotations:$aaVersion"
