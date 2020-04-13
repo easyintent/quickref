@@ -113,7 +113,10 @@ dependencies {
 
     implementation "org.androidannotations:androidannotations-api:$aaVersion"
     implementation ('commons-io:commons-io:2.5') {  transitive = false  }
-    implementation 'eu.lp0.slf4j:slf4j-android:1.7.22-0'
+
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    releaseImplementation 'org.slf4j:slf4j-nop:1.7.30'
+    debugImplementation 'uk.uuid.slf4j:slf4j-android:1.7.30-0'
 
     annotationProcessor "org.androidannotations:androidannotations:$aaVersion"
 
