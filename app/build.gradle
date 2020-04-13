@@ -104,7 +104,7 @@ android {
     }
 }
 
-def aaVersion = '4.6.0'
+def aaVersion = '4.7.0'
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
