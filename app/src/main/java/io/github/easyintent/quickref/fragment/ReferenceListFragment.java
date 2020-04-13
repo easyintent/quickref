@@ -3,18 +3,12 @@ package io.github.easyintent.quickref.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ActionMode;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ViewSwitcher;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
@@ -27,6 +21,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
@@ -107,10 +108,14 @@ public class ReferenceListFragment extends Fragment
         factory = RepositoryFactory.newInstance(getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        if (list == null) {
-            load();
+        mayRestoreContent();
+    }
+
+    private void mayRestoreContent() {
+        if (list != null) {
+            showList(list);
         } else {
-            show(list);
+            load();
         }
     }
 
@@ -133,10 +138,10 @@ public class ReferenceListFragment extends Fragment
         ReferenceRepository repo = factory.createCategoryRepository();
         try {
             list = repo.search(query);
-            onLoadDone(true, list, null);
+            showList(list);
         } catch (RepositoryException e) {
             logger.debug("Failed to search reference", e);
-            onLoadDone(false, null, e.getMessage());
+            showError(e.getMessage());
         }
     }
 
@@ -145,24 +150,22 @@ public class ReferenceListFragment extends Fragment
         ReferenceRepository repo = factory.createCategoryRepository();
         try {
             list = repo.list(parentId);
-            onLoadDone(true, list, null);
+            showList(list);
         } catch (RepositoryException e) {
             logger.debug("Failed to get reference list", e);
-            onLoadDone(false, null, e.getMessage());
+            showError(e.getMessage());
         }
     }
 
     @UiThread
     @IgnoreWhen(IgnoreWhen.State.DETACHED)
-    protected void onLoadDone(boolean success, List<ReferenceItem> newList, String message) {
-        if (!success) {
-            info(getFragmentManager(), "load_list_error", message);
-            return;
-        }
-        show(newList);
+    protected void showError(String message) {
+        info(getFragmentManager(), "load_list_error", message);
     }
 
-    private void show(List<ReferenceItem> list) {
+    @UiThread
+    @IgnoreWhen(IgnoreWhen.State.VIEW_DESTROYED)
+    protected void showList(List<ReferenceItem> newList) {
         adapter = new ReferenceItemAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
