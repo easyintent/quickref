@@ -2,19 +2,14 @@ package io.github.easyintent.quickref.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ActionMode;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EFragment;
@@ -24,9 +19,14 @@ import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
@@ -98,24 +98,23 @@ public class FavoriteListFragment extends Fragment
         ReferenceRepository repo = factory.createCategoryRepository();
         try {
             List<ReferenceItem> newData = repo.listByIds(ids);
-            onLoadDone(true, newData, null);
+            showList(newData);
         } catch (RepositoryException e) {
             logger.debug("Failed to get list", e);
-            onLoadDone(false, Collections.emptyList(), e.getMessage());
+            showError(e.getMessage());
         }
     }
 
     @UiThread
     @IgnoreWhen(IgnoreWhen.State.DETACHED)
-    protected void onLoadDone(boolean success, List<ReferenceItem> newList, String message) {
-        list = newList;
-        show(newList);
-        if (!success) {
-            Dialog.info(getFragmentManager(), "favorite_error", message);
-        }
+    protected void showError(String message) {
+        Dialog.info(getFragmentManager(), "favorite_error", message);
     }
 
-    protected void show(List<ReferenceItem> list) {
+    @UiThread
+    @IgnoreWhen(IgnoreWhen.State.VIEW_DESTROYED)
+    protected void showList(List<ReferenceItem> newList) {
+        list = newList;
         adapter = new ReferenceItemAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
@@ -217,5 +216,4 @@ public class FavoriteListFragment extends Fragment
             reload();
         }
     }
-
 }
