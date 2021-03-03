@@ -1,4 +1,4 @@
-package io.github.easyintent.quickref.data;
+package io.github.easyintent.quickref.model;
 
 public class ReferenceItem {
 

@@ -1,4 +1,4 @@
-package io.github.easyintent.quickref.fragment;
+package io.github.easyintent.quickref.view;
 
 
 public interface ClosableFragment {

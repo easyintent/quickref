@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import io.github.easyintent.quickref.data.ReferenceItem;
+import io.github.easyintent.quickref.model.ReferenceItem;
 
 public final class ReferenceListSelection {
 

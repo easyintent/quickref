@@ -46,15 +46,6 @@ android {
         versionCode 8
         versionName "0.6.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [
-                    "classSuffix": "Ex",
-                    "resourcePackageName": android.defaultConfig.applicationId
-                ]
-            }
-        }
     }
 
     signingConfigs {
@@ -102,25 +93,30 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    buildFeatures {
+        viewBinding true
+    }
 }
 
-def aaVersion = '4.7.0'
+def lifecycleVersion = "2.3.0"
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.cardview:cardview:1.0.0'
 
-    implementation "org.androidannotations:androidannotations-api:$aaVersion"
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "androidx.fragment:fragment:1.3.0"
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation 'com.google.android.material:material:1.3.0'
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycleVersion"
     implementation ('commons-io:commons-io:2.6') {  transitive = false  }
 
     implementation 'org.slf4j:slf4j-api:1.7.30'
     releaseImplementation 'org.slf4j:slf4j-nop:1.7.30'
     debugImplementation 'uk.uuid.slf4j:slf4j-android:1.7.30-0'
 
-    annotationProcessor "org.androidannotations:androidannotations:$aaVersion"
-
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test:runner:1.3.0'
