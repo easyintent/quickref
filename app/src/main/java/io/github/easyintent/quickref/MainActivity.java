@@ -1,29 +1,28 @@
 package io.github.easyintent.quickref;
 
 import android.os.Bundle;
-import com.google.android.material.navigation.NavigationView;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.androidannotations.annotations.EActivity;
+import com.google.android.material.navigation.NavigationView;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import io.github.easyintent.quickref.databinding.ActivityMainBinding;
 import io.github.easyintent.quickref.view.AboutFragment;
 import io.github.easyintent.quickref.view.ClosableFragment;
 import io.github.easyintent.quickref.view.FavoriteListFragment;
 import io.github.easyintent.quickref.view.MessageDialogFragment;
 import io.github.easyintent.quickref.view.ReferenceListFragment;
 
-@EActivity
 public class MainActivity extends AppCompatActivity
         implements
             NavigationView.OnNavigationItemSelectedListener,
@@ -31,29 +30,28 @@ public class MainActivity extends AppCompatActivity
 
     private static final Logger logger = LoggerFactory.getLogger(MainActivity.class);
 
-    private Toolbar toolbar;
-    private NavigationView navigationView;
 
     // closable fragment on top
     private ClosableFragment closableFragment;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        setSupportActionBar(binding.appBar.toolbar);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.lbl_nav_open, R.string.lbl_nav_close);
+                this, binding.drawerLayout,
+                binding.appBar.toolbar, R.string.lbl_nav_open, R.string.lbl_nav_close);
 
-        drawer.addDrawerListener(toggle);
+        binding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        binding.navigationView.setNavigationItemSelectedListener(this);
 
         initFragment();
     }
@@ -110,16 +108,12 @@ public class MainActivity extends AppCompatActivity
 
         showMainFragment();
 
-        switch (item.getItemId()) {
-            case R.id.nav_all:
-                break;
-            case R.id.nav_favorite:
-                showFavorites();
-                break;
-            case R.id.nav_about:
-                showAbout();
-                break;
-        }
+        int itemId = item.getItemId();
+        if (itemId == R.id.nav_favorite) {
+            showFavorites();
+        } else if (itemId == R.id.nav_about) {
+            showAbout();
+        } // else if (itemId == R.id.nav_all) {}
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -168,7 +162,7 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         }
 
-        navigationView.setCheckedItem(R.id.nav_all);
+        binding.navigationView.setCheckedItem(R.id.nav_all);
         closableFragment = fragment;
     }
 
@@ -183,6 +177,6 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager()
                 .popBackStack("main", 0);
 
-        navigationView.setCheckedItem(R.id.nav_all);
+        binding.navigationView.setCheckedItem(R.id.nav_all);
     }
 }
