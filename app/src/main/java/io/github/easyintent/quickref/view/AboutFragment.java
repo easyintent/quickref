@@ -7,28 +7,26 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.TextView;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import io.github.easyintent.quickref.R;
+import io.github.easyintent.quickref.databinding.FragmentAboutBinding;
 
-@EFragment(R.layout.fragment_about)
 public class AboutFragment extends Fragment implements ClosableFragment {
 
-    @ViewById protected TextView versionView;
+    private FragmentAboutBinding binding;
 
     public static AboutFragment newInstance() {
         Bundle args = new Bundle();
-        AboutFragment fragment = new AboutFragmentEx();
+        AboutFragment fragment = new AboutFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -39,10 +37,27 @@ public class AboutFragment extends Fragment implements ClosableFragment {
         setHasOptionsMenu(true);
     }
 
+    @Nullable
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getActivity().setTitle(R.string.lbl_about);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        binding = FragmentAboutBinding.inflate(inflater);
+        binding.linkView.setOnClickListener(v->linkClicked());
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        requireActivity().setTitle(R.string.lbl_about);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        showVersion(requireActivity());
     }
 
     @Override
@@ -50,12 +65,6 @@ public class AboutFragment extends Fragment implements ClosableFragment {
         menu.clear();
     }
 
-    @AfterViews
-    protected void afterViews() {
-        showVersion(getActivity());
-    }
-
-    @Click(R.id.link_view)
     protected void linkClicked() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(getString(R.string.app_home)));
@@ -74,7 +83,7 @@ public class AboutFragment extends Fragment implements ClosableFragment {
         } catch (PackageManager.NameNotFoundException e) {
             version = "?";
         }
-        versionView.setText(getString(R.string.msg_about_version, version));
+        binding.versionView.setText(getString(R.string.msg_about_version, version));
     }
 
     @Override

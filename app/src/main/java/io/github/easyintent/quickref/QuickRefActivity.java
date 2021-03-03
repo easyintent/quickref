@@ -3,16 +3,16 @@ package io.github.easyintent.quickref;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import io.github.easyintent.quickref.databinding.ActivityQuickRefBinding;
 import io.github.easyintent.quickref.view.MessageDialogFragment;
 import io.github.easyintent.quickref.view.ReferenceListFragment;
 
@@ -24,8 +24,7 @@ public class QuickRefActivity extends AppCompatActivity
     @Extra protected String parentId;
     @Extra protected String query;
 
-    private Toolbar toolbar;
-
+    private ActivityQuickRefBinding binding;
     private ReferenceListFragment fragment;
 
     /** Create new reference list intent.
@@ -65,9 +64,11 @@ public class QuickRefActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quick_ref);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        binding = ActivityQuickRefBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.appBar.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(title);
         initFragment();
