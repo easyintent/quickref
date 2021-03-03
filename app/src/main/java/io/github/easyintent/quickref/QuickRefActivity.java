@@ -3,10 +3,7 @@ package io.github.easyintent.quickref;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.Extra;
-import org.androidannotations.annotations.OptionsItem;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,13 +13,11 @@ import io.github.easyintent.quickref.databinding.ActivityQuickRefBinding;
 import io.github.easyintent.quickref.view.MessageDialogFragment;
 import io.github.easyintent.quickref.view.ReferenceListFragment;
 
-@EActivity
 public class QuickRefActivity extends AppCompatActivity
         implements MessageDialogFragment.Listener {
 
-    @Extra protected String title;
-    @Extra protected String parentId;
-    @Extra protected String query;
+    private String parentId;
+    private String query;
 
     private ActivityQuickRefBinding binding;
     private ReferenceListFragment fragment;
@@ -42,7 +37,7 @@ public class QuickRefActivity extends AppCompatActivity
         Intent intent = new Intent(Intents.ACTION_LIST);
         intent.putExtra("parentId", parentId);
         intent.putExtra("title", title);
-        intent.setClass(context, QuickRefActivityEx.class);
+        intent.setClass(context, QuickRefActivity.class);
         return intent;
     }
 
@@ -57,7 +52,7 @@ public class QuickRefActivity extends AppCompatActivity
         Intent intent = new Intent(Intents.ACTION_SEARCH);
         intent.putExtra("query", query);
         intent.putExtra("title", context.getString(R.string.lbl_search_title, query));
-        intent.setClass(context, QuickRefActivityEx.class);
+        intent.setClass(context, QuickRefActivity.class);
         return intent;
     }
 
@@ -70,6 +65,11 @@ public class QuickRefActivity extends AppCompatActivity
 
         setSupportActionBar(binding.appBar.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        String title = getIntent().getStringExtra("title");
+        parentId = getIntent().getStringExtra("parentId");
+        query = getIntent().getStringExtra("query");
+
         setTitle(title);
         initFragment();
     }
@@ -81,9 +81,13 @@ public class QuickRefActivity extends AppCompatActivity
         }
     }
 
-    @OptionsItem(android.R.id.home)
-    protected void upClicked() {
-        finish();
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initFragment() {

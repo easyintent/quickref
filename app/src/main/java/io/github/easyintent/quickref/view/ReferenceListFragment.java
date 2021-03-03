@@ -11,11 +11,6 @@ import android.view.ViewGroup;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.IgnoreWhen;
-import org.androidannotations.annotations.UiThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +35,6 @@ import io.github.easyintent.quickref.viewmodel.ReferenceListViewModel;
 import static io.github.easyintent.quickref.view.Dialog.info;
 
 
-@EFragment
 public class ReferenceListFragment extends Fragment
         implements
         AdapterListener<ReferenceItem>,
@@ -48,9 +42,9 @@ public class ReferenceListFragment extends Fragment
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceListFragment.class);
 
-    @FragmentArg protected String parentId;
-    @FragmentArg protected String query;
-    @FragmentArg protected boolean searchMode;
+    private String parentId;
+    private String query;
+    private boolean searchMode;
 
     private ReferenceItemAdapter adapter;
     private ActionMode selectionActionMode;
@@ -66,7 +60,7 @@ public class ReferenceListFragment extends Fragment
      */
     @NonNull
     public static ReferenceListFragment newListChildrenInstance(@Nullable String parentId) {
-        ReferenceListFragment fragment = new ReferenceListFragmentEx();
+        ReferenceListFragment fragment = new ReferenceListFragment();
         Bundle args = new Bundle();
         args.putString("parentId", parentId);
         fragment.setArguments(args);
@@ -81,12 +75,23 @@ public class ReferenceListFragment extends Fragment
      */
     @NonNull
     public static ReferenceListFragment newSearchInstance(@NonNull String query) {
-        ReferenceListFragment fragment = new ReferenceListFragmentEx();
+        ReferenceListFragment fragment = new ReferenceListFragment();
         Bundle args = new Bundle();
         args.putString("query", query);
         args.putBoolean("searchMode", true);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            parentId = args.getString("parentId");
+            query = args.getString("query");
+            searchMode = args.getBoolean("searchMode");
+        }
     }
 
     @Nullable
@@ -103,10 +108,10 @@ public class ReferenceListFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ReferenceListViewModel.class);
+        configureViews();
     }
 
-    @AfterViews
-    protected void configureViews() {
+    private void configureViews() {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setListShown(false);
 
@@ -124,15 +129,11 @@ public class ReferenceListFragment extends Fragment
         return adapter == null || !adapter.isSelectionMode();
     }
 
-    @UiThread
-    @IgnoreWhen(IgnoreWhen.State.DETACHED)
-    protected void showError(String message) {
+    private void showError(String message) {
         info(getParentFragmentManager(), "load_list_error", message);
     }
 
-    @UiThread
-    @IgnoreWhen(IgnoreWhen.State.VIEW_DESTROYED)
-    protected void showList(List<ReferenceItem> list) {
+    private void showList(List<ReferenceItem> list) {
         adapter = new ReferenceItemAdapter(list, this);
         binding.recyclerView.setAdapter(adapter);
 

@@ -19,7 +19,7 @@
             </intent-filter>
 
         </activity>
-        <activity android:name="io.github.easyintent.quickref.QuickRefActivityEx"/>
+        <activity android:name="io.github.easyintent.quickref.QuickRefActivity"/>
     </application>
 
 </manifest>

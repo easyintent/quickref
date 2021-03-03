@@ -46,15 +46,6 @@ android {
         versionCode 8
         versionName "0.6.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [
-                    "classSuffix": "Ex",
-                    "resourcePackageName": android.defaultConfig.applicationId
-                ]
-            }
-        }
     }
 
     signingConfigs {
@@ -108,7 +99,6 @@ android {
     }
 }
 
-def aaVersion = '4.8.0'
 def lifecycleVersion = "2.3.0"
 
 dependencies {
@@ -120,15 +110,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
 
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycleVersion"
-
-    implementation "org.androidannotations:androidannotations-api:$aaVersion"
     implementation ('commons-io:commons-io:2.6') {  transitive = false  }
 
     implementation 'org.slf4j:slf4j-api:1.7.30'
     releaseImplementation 'org.slf4j:slf4j-nop:1.7.30'
     debugImplementation 'uk.uuid.slf4j:slf4j-android:1.7.30-0'
-
-    annotationProcessor "org.androidannotations:androidannotations:$aaVersion"
 
     testImplementation 'junit:junit:4.13.2'
 
