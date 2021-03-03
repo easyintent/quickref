@@ -13,8 +13,8 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
 
-import io.github.easyintent.quickref.fragment.MessageDialogFragment;
-import io.github.easyintent.quickref.fragment.ReferenceListFragment;
+import io.github.easyintent.quickref.view.MessageDialogFragment;
+import io.github.easyintent.quickref.view.ReferenceListFragment;
 
 @EActivity
 public class QuickRefActivity extends AppCompatActivity

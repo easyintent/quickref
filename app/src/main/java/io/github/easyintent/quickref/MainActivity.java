@@ -17,11 +17,11 @@ import org.androidannotations.annotations.EActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.easyintent.quickref.fragment.AboutFragment;
-import io.github.easyintent.quickref.fragment.ClosableFragment;
-import io.github.easyintent.quickref.fragment.FavoriteListFragment;
-import io.github.easyintent.quickref.fragment.MessageDialogFragment;
-import io.github.easyintent.quickref.fragment.ReferenceListFragment;
+import io.github.easyintent.quickref.view.AboutFragment;
+import io.github.easyintent.quickref.view.ClosableFragment;
+import io.github.easyintent.quickref.view.FavoriteListFragment;
+import io.github.easyintent.quickref.view.MessageDialogFragment;
+import io.github.easyintent.quickref.view.ReferenceListFragment;
 
 @EActivity
 public class MainActivity extends AppCompatActivity

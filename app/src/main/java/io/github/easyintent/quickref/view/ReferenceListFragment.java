@@ -1,4 +1,4 @@
-package io.github.easyintent.quickref.fragment;
+package io.github.easyintent.quickref.view;
 
 
 import android.content.Intent;
@@ -32,13 +32,13 @@ import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
-import io.github.easyintent.quickref.data.ReferenceItem;
+import io.github.easyintent.quickref.model.ReferenceItem;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
 
-import static io.github.easyintent.quickref.fragment.Dialog.info;
+import static io.github.easyintent.quickref.view.Dialog.info;
 
 
 @EFragment(R.layout.fragment_reference_list)

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.github.easyintent.quickref.R;
-import io.github.easyintent.quickref.data.ReferenceItem;
+import io.github.easyintent.quickref.model.ReferenceItem;
 
 public class SqliteReferenceRepository implements ReferenceRepository {
 
