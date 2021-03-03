@@ -10,7 +10,7 @@ import android.widget.ViewSwitcher;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.IgnoreWhen;
@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.easyintent.quickref.QuickRefActivity;
@@ -33,10 +34,8 @@ import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.model.ReferenceItem;
-import io.github.easyintent.quickref.repository.ReferenceRepository;
-import io.github.easyintent.quickref.repository.RepositoryException;
-import io.github.easyintent.quickref.repository.RepositoryFactory;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
+import io.github.easyintent.quickref.viewmodel.ReferenceListViewModel;
 
 import static io.github.easyintent.quickref.view.Dialog.info;
 
@@ -58,11 +57,10 @@ public class ReferenceListFragment extends Fragment
 
     @ViewById protected ViewSwitcher switcher;
 
-    private RepositoryFactory factory;
-    private List<ReferenceItem> list;
-
     private ReferenceItemAdapter adapter;
     private ActionMode selectionActionMode;
+
+    private ReferenceListViewModel viewModel;
 
     /** Create list of reference fragment.
      *
@@ -98,24 +96,25 @@ public class ReferenceListFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        factory = RepositoryFactory.newInstance(getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        mayRestoreContent();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(ReferenceListViewModel.class);
     }
 
-    private void mayRestoreContent() {
-        if (list != null) {
-            showList(list);
+    @AfterViews
+    protected void configureViews() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        setListShown(false);
+
+        viewModel.getListLiveData().observe(getViewLifecycleOwner(), this::showList);
+
+        if (searchMode) {
+            viewModel.search(query);
         } else {
-            load();
+            viewModel.loadCategory(parentId);
         }
     }
 
@@ -124,48 +123,15 @@ public class ReferenceListFragment extends Fragment
         return adapter == null || !adapter.isSelectionMode();
     }
 
-    private void load() {
-        setListShown(false);
-        if (searchMode) {
-            search(factory, query);
-        } else {
-            loadCategory(factory, parentId);
-        }
-    }
-
-    @Background
-    protected void search(RepositoryFactory factory, String query) {
-        ReferenceRepository repo = factory.createCategoryRepository();
-        try {
-            list = repo.search(query);
-            showList(list);
-        } catch (RepositoryException e) {
-            logger.debug("Failed to search reference", e);
-            showError(e.getMessage());
-        }
-    }
-
-    @Background
-    protected void loadCategory(RepositoryFactory factory, String parentId) {
-        ReferenceRepository repo = factory.createCategoryRepository();
-        try {
-            list = repo.list(parentId);
-            showList(list);
-        } catch (RepositoryException e) {
-            logger.debug("Failed to get reference list", e);
-            showError(e.getMessage());
-        }
-    }
-
     @UiThread
     @IgnoreWhen(IgnoreWhen.State.DETACHED)
     protected void showError(String message) {
-        info(getFragmentManager(), "load_list_error", message);
+        info(getParentFragmentManager(), "load_list_error", message);
     }
 
     @UiThread
     @IgnoreWhen(IgnoreWhen.State.VIEW_DESTROYED)
-    protected void showList(List<ReferenceItem> newList) {
+    protected void showList(List<ReferenceItem> list) {
         adapter = new ReferenceItemAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
@@ -242,24 +208,21 @@ public class ReferenceListFragment extends Fragment
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.add_favorite:
-                    addSelectedItemsToFavorites();
-                    break;
+            if (item.getItemId() == R.id.add_favorite) {
+                addSelectedItemsToFavorites();
             }
             mode.finish();
             return true;
         }
 
         private void addSelectedItemsToFavorites() {
-            if (adapter == null) {
-                return;
-            }
-            List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
+            if (adapter != null) {
+                List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
 
-            FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
-            favoriteConfig.add(favorites);
-            Snackbar.make(switcher, R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
+                FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
+                favoriteConfig.add(favorites);
+                Snackbar.make(switcher, R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -11,7 +11,7 @@ import android.widget.ViewSwitcher;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.IgnoreWhen;
 import org.androidannotations.annotations.UiThread;
@@ -21,21 +21,20 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
-import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.model.ReferenceItem;
-import io.github.easyintent.quickref.repository.ReferenceRepository;
-import io.github.easyintent.quickref.repository.RepositoryException;
-import io.github.easyintent.quickref.repository.RepositoryFactory;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
+import io.github.easyintent.quickref.viewmodel.FavoriteListViewModel;
 
 @EFragment(R.layout.fragment_favorites)
 public class FavoriteListFragment extends Fragment
@@ -49,12 +48,10 @@ public class FavoriteListFragment extends Fragment
     @ViewById protected TextView emptyView;
     @ViewById protected ViewSwitcher switcher;
 
-    private RepositoryFactory factory;
-    private FavoriteConfig favoriteConfig;
-    private List<ReferenceItem> list;
-
     private ReferenceItemAdapter adapter;
     private ActionMode selectionMode;
+
+    private FavoriteListViewModel viewModel;
 
     public static FavoriteListFragment newInstance() {
         Bundle args = new Bundle();
@@ -70,21 +67,19 @@ public class FavoriteListFragment extends Fragment
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getActivity().setTitle(getString(R.string.lbl_favorites));
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        factory = RepositoryFactory.newInstance(getActivity());
-        favoriteConfig = new FavoriteConfig(getActivity());
-
+    public void onViewCreated(
+            @NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(FavoriteListViewModel.class);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        reload();
+    @AfterViews
+    protected void configureViews() {
+        getActivity().setTitle(getString(R.string.lbl_favorites));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        viewModel.getListLiveData().observe(this, this::showList);
+        viewModel.refresh();
     }
 
     @Override
@@ -92,29 +87,15 @@ public class FavoriteListFragment extends Fragment
         menu.clear();
     }
 
-    @Background
-    protected void loadList(RepositoryFactory factory, FavoriteConfig favoriteConfig) {
-        List<String> ids = favoriteConfig.list();
-        ReferenceRepository repo = factory.createCategoryRepository();
-        try {
-            List<ReferenceItem> newData = repo.listByIds(ids);
-            showList(newData);
-        } catch (RepositoryException e) {
-            logger.debug("Failed to get list", e);
-            showError(e.getMessage());
-        }
-    }
-
     @UiThread
     @IgnoreWhen(IgnoreWhen.State.DETACHED)
     protected void showError(String message) {
-        Dialog.info(getFragmentManager(), "favorite_error", message);
+        Dialog.info(getParentFragmentManager(), "favorite_error", message);
     }
 
     @UiThread
     @IgnoreWhen(IgnoreWhen.State.VIEW_DESTROYED)
-    protected void showList(List<ReferenceItem> newList) {
-        list = newList;
+    protected void showList(List<ReferenceItem> list) {
         adapter = new ReferenceItemAdapter(list, this);
         recyclerView.setAdapter(adapter);
 
@@ -136,11 +117,6 @@ public class FavoriteListFragment extends Fragment
         String id = item.getId();
         Intent intent = QuickRefActivity.newListIntent(getContext(), title, id);
         startActivity(intent);
-    }
-
-    private void reload() {
-        setListShown(false);
-        loadList(factory, favoriteConfig);
     }
 
     private void setListShown(boolean shown) {
@@ -205,15 +181,12 @@ public class FavoriteListFragment extends Fragment
         }
 
         private void deleteFromFavorites() {
-            if (adapter == null) {
-                return;
+            if (adapter != null) {
+                List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
+                viewModel.delete(favorites);
+
+                Snackbar.make(switcher, R.string.msg_favorite_removed, Snackbar.LENGTH_SHORT).show();
             }
-
-            List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
-            favoriteConfig.delete(favorites);
-            Snackbar.make(switcher, R.string.msg_favorite_removed, Snackbar.LENGTH_SHORT).show();
-
-            reload();
         }
     }
 }
