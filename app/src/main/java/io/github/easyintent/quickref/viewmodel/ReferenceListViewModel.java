@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 import io.github.easyintent.quickref.ExecutorProvider;
 import io.github.easyintent.quickref.QuickRefApplication;
 import io.github.easyintent.quickref.model.ReferenceItem;
+import io.github.easyintent.quickref.model.ReferenceListData;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
@@ -23,20 +24,20 @@ public class ReferenceListViewModel extends AndroidViewModel {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceListViewModel.class);
 
     private final ReferenceRepository repository;
-    private final MutableLiveData<List<ReferenceItem>> listLiveData;
+    private final MutableLiveData<ReferenceListData> liveData;
 
     private final ExecutorProvider executorProvider;
 
     public ReferenceListViewModel(@NonNull Application application) {
         super(application);
-        listLiveData = new MutableLiveData<>();
+        liveData = new MutableLiveData<>();
         executorProvider = (ExecutorProvider) application;
         RepositoryFactory factory = ((QuickRefApplication) application).getRepositoryFactory();
         repository = factory.createCategoryRepository();
     }
 
-    public LiveData<List<ReferenceItem>> getListLiveData() {
-        return listLiveData;
+    public LiveData<ReferenceListData> getLiveData() {
+        return liveData;
     }
 
     public void search(String query) {
@@ -50,19 +51,20 @@ public class ReferenceListViewModel extends AndroidViewModel {
     private void loadCategoryInBackground(String parentId) {
         try {
             List<ReferenceItem> list = repository.list(parentId);
-            this.listLiveData.postValue(list);
+            this.liveData.postValue(ReferenceListData.of(list));
         } catch (RepositoryException e) {
             logger.debug("Failed to get reference list", e);
+            this.liveData.postValue(ReferenceListData.of(e.getMessage()));
         }
     }
 
     private void searchInBackground(String query) {
         try {
             List<ReferenceItem> list = repository.search(query);
-            this.listLiveData.postValue(list);
+            this.liveData.postValue(ReferenceListData.of(list));
         } catch (RepositoryException e) {
             logger.debug("Failed to search reference", e);
+            this.liveData.postValue(ReferenceListData.of(e.getMessage()));
         }
     }
-
 }

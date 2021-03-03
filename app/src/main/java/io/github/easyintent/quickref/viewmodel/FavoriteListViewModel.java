@@ -14,6 +14,7 @@ import io.github.easyintent.quickref.ExecutorProvider;
 import io.github.easyintent.quickref.QuickRefApplication;
 import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.model.ReferenceItem;
+import io.github.easyintent.quickref.model.ReferenceListData;
 import io.github.easyintent.quickref.repository.ReferenceRepository;
 import io.github.easyintent.quickref.repository.RepositoryException;
 import io.github.easyintent.quickref.repository.RepositoryFactory;
@@ -24,7 +25,7 @@ public class FavoriteListViewModel extends AndroidViewModel  {
 
     private final ReferenceRepository repository;
     private final FavoriteConfig favoriteConfig;
-    private final MutableLiveData<List<ReferenceItem>> listLiveData;
+    private final MutableLiveData<ReferenceListData> liveData;
     private final ExecutorProvider executorProvider;
 
     public FavoriteListViewModel(@NonNull Application application) {
@@ -33,17 +34,17 @@ public class FavoriteListViewModel extends AndroidViewModel  {
         RepositoryFactory factory = ((QuickRefApplication) application).getRepositoryFactory();
         repository = factory.createCategoryRepository();
         favoriteConfig = new FavoriteConfig(application);
-        listLiveData = new MutableLiveData<>();
+        liveData = new MutableLiveData<>();
 
         executorProvider = (ExecutorProvider) application;
     }
 
-    public MutableLiveData<List<ReferenceItem>> getListLiveData() {
-        return listLiveData;
+    public MutableLiveData<ReferenceListData> getLiveData() {
+        return liveData;
     }
 
     public void refresh() {
-        executorProvider.getBackgroundExecutor().execute(this::loadList);
+        executorProvider.getBackgroundExecutor().execute(this::loadListInBackground);
     }
 
     public void delete(List<String> favorites) {
@@ -51,13 +52,14 @@ public class FavoriteListViewModel extends AndroidViewModel  {
         refresh();
     }
 
-    private void loadList() {
+    private void loadListInBackground() {
         List<String> ids = favoriteConfig.list();
         try {
             List<ReferenceItem> newData = repository.listByIds(ids);
-            listLiveData.postValue(newData);
+            liveData.postValue(ReferenceListData.of(newData));
         } catch (RepositoryException e) {
             logger.debug("Failed to get list", e);
+            liveData.postValue(ReferenceListData.of(e.getMessage()));
         }
     }
 }

@@ -28,6 +28,7 @@ import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.databinding.FragmentReferenceListBinding;
 import io.github.easyintent.quickref.model.ReferenceItem;
+import io.github.easyintent.quickref.model.ReferenceListData;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
 import io.github.easyintent.quickref.viewmodel.FavoriteListViewModel;
 
@@ -76,8 +77,16 @@ public class FavoriteListFragment extends Fragment
 
         viewModel = new ViewModelProvider(this).get(FavoriteListViewModel.class);
 
-        viewModel.getListLiveData().observe(getViewLifecycleOwner(), this::showList);
+        viewModel.getLiveData().observe(getViewLifecycleOwner(), this::showData);
         viewModel.refresh();
+    }
+
+    private void showData(ReferenceListData data) {
+        if (data.hasList()) {
+            showList(data.getList());
+        } else {
+            showError(data.getMessage());
+        }
     }
 
     @Override
@@ -85,7 +94,7 @@ public class FavoriteListFragment extends Fragment
         menu.clear();
     }
 
-    protected void showError(String message) {
+    private void showError(String message) {
         Dialog.info(getParentFragmentManager(), "favorite_error", message);
     }
 

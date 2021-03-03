@@ -29,6 +29,7 @@ import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.databinding.FragmentReferenceListBinding;
 import io.github.easyintent.quickref.model.ReferenceItem;
+import io.github.easyintent.quickref.model.ReferenceListData;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
 import io.github.easyintent.quickref.viewmodel.ReferenceListViewModel;
 
@@ -115,12 +116,20 @@ public class ReferenceListFragment extends Fragment
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setListShown(false);
 
-        viewModel.getListLiveData().observe(getViewLifecycleOwner(), this::showList);
+        viewModel.getLiveData().observe(getViewLifecycleOwner(), this::showData);
 
         if (searchMode) {
             viewModel.search(query);
         } else {
             viewModel.loadCategory(parentId);
+        }
+    }
+
+    private void showData(ReferenceListData data) {
+        if (data.hasList()) {
+            showList(data.getList());
+        } else {
+            showError(data.getMessage());
         }
     }
 
@@ -210,21 +219,19 @@ public class ReferenceListFragment extends Fragment
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            if (item.getItemId() == R.id.add_favorite) {
-                addSelectedItemsToFavorites();
+            if (item.getItemId() == R.id.add_favorite && adapter != null) {
+                addSelectedItemsToFavorites(adapter);
             }
             mode.finish();
             return true;
         }
 
-        private void addSelectedItemsToFavorites() {
-            if (adapter != null) {
-                List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
+        private void addSelectedItemsToFavorites(@NonNull ReferenceItemAdapter adapter) {
+            List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
 
-                FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
-                favoriteConfig.add(favorites);
-                Snackbar.make(binding.getRoot(), R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
-            }
+            FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
+            favoriteConfig.add(favorites);
+            Snackbar.make(binding.getRoot(), R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
         }
     }
 
