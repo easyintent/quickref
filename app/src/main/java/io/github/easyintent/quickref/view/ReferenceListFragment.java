@@ -3,10 +3,11 @@ package io.github.easyintent.quickref.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ViewSwitcher;
+import android.view.ViewGroup;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -15,7 +16,6 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.FragmentArg;
 import org.androidannotations.annotations.IgnoreWhen;
 import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +28,11 @@ import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
+import io.github.easyintent.quickref.databinding.FragmentReferenceListBinding;
 import io.github.easyintent.quickref.model.ReferenceItem;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
 import io.github.easyintent.quickref.viewmodel.ReferenceListViewModel;
@@ -40,7 +40,7 @@ import io.github.easyintent.quickref.viewmodel.ReferenceListViewModel;
 import static io.github.easyintent.quickref.view.Dialog.info;
 
 
-@EFragment(R.layout.fragment_reference_list)
+@EFragment
 public class ReferenceListFragment extends Fragment
         implements
         AdapterListener<ReferenceItem>,
@@ -52,14 +52,10 @@ public class ReferenceListFragment extends Fragment
     @FragmentArg protected String query;
     @FragmentArg protected boolean searchMode;
 
-    @ViewById protected RecyclerView recyclerView;
-    @ViewById protected View emptyView;
-
-    @ViewById protected ViewSwitcher switcher;
-
     private ReferenceItemAdapter adapter;
     private ActionMode selectionActionMode;
 
+    private FragmentReferenceListBinding binding;
     private ReferenceListViewModel viewModel;
 
     /** Create list of reference fragment.
@@ -93,9 +89,14 @@ public class ReferenceListFragment extends Fragment
         return fragment;
     }
 
+    @Nullable
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        binding = FragmentReferenceListBinding.inflate(inflater);
+        return binding.getRoot();
     }
 
     @Override
@@ -106,7 +107,7 @@ public class ReferenceListFragment extends Fragment
 
     @AfterViews
     protected void configureViews() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         setListShown(false);
 
         viewModel.getListLiveData().observe(getViewLifecycleOwner(), this::showList);
@@ -133,11 +134,11 @@ public class ReferenceListFragment extends Fragment
     @IgnoreWhen(IgnoreWhen.State.VIEW_DESTROYED)
     protected void showList(List<ReferenceItem> list) {
         adapter = new ReferenceItemAdapter(list, this);
-        recyclerView.setAdapter(adapter);
+        binding.recyclerView.setAdapter(adapter);
 
         boolean hasContent = list.size() > 0;
-        emptyView.setVisibility(hasContent ? View.GONE : View.VISIBLE);
-        recyclerView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
+        binding.emptyView.setVisibility(hasContent ? View.GONE : View.VISIBLE);
+        binding.recyclerView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
 
         setListShown(true);
     }
@@ -170,7 +171,7 @@ public class ReferenceListFragment extends Fragment
 
     @Override
     public void onMultiSelectionStart() {
-        ((AppCompatActivity) getActivity()).startSupportActionMode(new SelectorCallback());
+        ((AppCompatActivity) requireActivity()).startSupportActionMode(new SelectorCallback());
         adapter.startSelectionMode();
     }
 
@@ -180,14 +181,14 @@ public class ReferenceListFragment extends Fragment
     }
 
     private void setListShown(boolean shown) {
-        switcher.setDisplayedChild(shown ? 0 : 1);
+        binding.switcher.setDisplayedChild(shown ? 0 : 1);
     }
 
     private class SelectorCallback implements ActionMode.Callback {
 
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-            getActivity().getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
+            requireActivity().getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
             selectionActionMode = actionMode;
             return true;
         }
@@ -221,7 +222,7 @@ public class ReferenceListFragment extends Fragment
 
                 FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
                 favoriteConfig.add(favorites);
-                Snackbar.make(switcher, R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.getRoot(), R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
             }
         }
     }

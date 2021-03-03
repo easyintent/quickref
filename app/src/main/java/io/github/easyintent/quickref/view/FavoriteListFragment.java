@@ -2,20 +2,15 @@ package io.github.easyintent.quickref.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.ViewSwitcher;
+import android.view.ViewGroup;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.IgnoreWhen;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +23,14 @@ import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
+import io.github.easyintent.quickref.databinding.FragmentReferenceListBinding;
 import io.github.easyintent.quickref.model.ReferenceItem;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
 import io.github.easyintent.quickref.viewmodel.FavoriteListViewModel;
 
-@EFragment(R.layout.fragment_favorites)
 public class FavoriteListFragment extends Fragment
         implements
             ClosableFragment,
@@ -44,18 +38,15 @@ public class FavoriteListFragment extends Fragment
 
     private static final Logger logger  = LoggerFactory.getLogger(FavoriteListFragment.class);
 
-    @ViewById protected RecyclerView recyclerView;
-    @ViewById protected TextView emptyView;
-    @ViewById protected ViewSwitcher switcher;
-
     private ReferenceItemAdapter adapter;
     private ActionMode selectionMode;
 
     private FavoriteListViewModel viewModel;
+    private FragmentReferenceListBinding binding;
 
     public static FavoriteListFragment newInstance() {
         Bundle args = new Bundle();
-        FavoriteListFragment fragment = new FavoriteListFragmentEx();
+        FavoriteListFragment fragment = new FavoriteListFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,19 +57,26 @@ public class FavoriteListFragment extends Fragment
         setHasOptionsMenu(true);
     }
 
+    @Nullable
     @Override
-    public void onViewCreated(
-            @NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(FavoriteListViewModel.class);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        binding = FragmentReferenceListBinding.inflate(inflater);
+        return binding.getRoot();
     }
 
-    @AfterViews
-    protected void configureViews() {
-        getActivity().setTitle(getString(R.string.lbl_favorites));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        viewModel.getListLiveData().observe(this, this::showList);
+        requireActivity().setTitle(getString(R.string.lbl_favorites));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        viewModel = new ViewModelProvider(this).get(FavoriteListViewModel.class);
+
+        viewModel.getListLiveData().observe(getViewLifecycleOwner(), this::showList);
         viewModel.refresh();
     }
 
@@ -87,21 +85,17 @@ public class FavoriteListFragment extends Fragment
         menu.clear();
     }
 
-    @UiThread
-    @IgnoreWhen(IgnoreWhen.State.DETACHED)
     protected void showError(String message) {
         Dialog.info(getParentFragmentManager(), "favorite_error", message);
     }
 
-    @UiThread
-    @IgnoreWhen(IgnoreWhen.State.VIEW_DESTROYED)
     protected void showList(List<ReferenceItem> list) {
         adapter = new ReferenceItemAdapter(list, this);
-        recyclerView.setAdapter(adapter);
+        binding.recyclerView.setAdapter(adapter);
 
         boolean hasContent = list.size() > 0;
-        emptyView.setVisibility(hasContent ? View.GONE : View.VISIBLE);
-        recyclerView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
+        binding.emptyView.setVisibility(hasContent ? View.GONE : View.VISIBLE);
+        binding.recyclerView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
 
         setListShown(true);
     }
@@ -120,7 +114,7 @@ public class FavoriteListFragment extends Fragment
     }
 
     private void setListShown(boolean shown) {
-        switcher.setDisplayedChild(shown ? 0 : 1);
+        binding.switcher.setDisplayedChild(shown ? 0 : 1);
     }
 
     @Override
@@ -163,10 +157,8 @@ public class FavoriteListFragment extends Fragment
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.delete_favorite:
-                    deleteFromFavorites();
-                    break;
+            if (item.getItemId() == R.id.delete_favorite) {
+                deleteFromFavorites();
             }
             mode.finish();
             return true;
@@ -185,7 +177,7 @@ public class FavoriteListFragment extends Fragment
                 List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
                 viewModel.delete(favorites);
 
-                Snackbar.make(switcher, R.string.msg_favorite_removed, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(binding.switcher, R.string.msg_favorite_removed, Snackbar.LENGTH_SHORT).show();
             }
         }
     }
