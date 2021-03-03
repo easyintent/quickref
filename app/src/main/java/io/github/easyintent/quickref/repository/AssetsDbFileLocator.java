@@ -2,9 +2,7 @@ package io.github.easyintent.quickref.repository;
 
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +13,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import androidx.annotation.NonNull;
 import io.github.easyintent.quickref.R;
+
+import static io.github.easyintent.quickref.util.IOUtils.close;
+import static io.github.easyintent.quickref.util.IOUtils.copy;
 
 public class AssetsDbFileLocator implements DbFileLocator {
 
@@ -89,12 +91,12 @@ public class AssetsDbFileLocator implements DbFileLocator {
             logger.debug("copying new database: {}", dbFile.getName());
             is = context.getAssets().open(DB_FILE);
             os = new FileOutputStream(dbFile);
-            IOUtils.copy(is, os);
+            copy(is, os);
         } catch (IOException e) {
             throw new RepositoryException(context.getString(R.string.msg_prepare_data_failed), e);
         } finally {
-            IOUtils.closeQuietly(is);
-            IOUtils.closeQuietly(os);
+            close(is);
+            close(os);
         }
     }
 

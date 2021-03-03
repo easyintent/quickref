@@ -1,21 +1,16 @@
-package io.github.easyintent.quickref.fragment;
+package io.github.easyintent.quickref.view;
 
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ViewSwitcher;
+import android.view.ViewGroup;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.IgnoreWhen;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,22 +21,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
-import io.github.easyintent.quickref.data.ReferenceItem;
-import io.github.easyintent.quickref.repository.ReferenceRepository;
-import io.github.easyintent.quickref.repository.RepositoryException;
-import io.github.easyintent.quickref.repository.RepositoryFactory;
+import io.github.easyintent.quickref.databinding.FragmentReferenceListBinding;
+import io.github.easyintent.quickref.model.ReferenceItem;
+import io.github.easyintent.quickref.model.ReferenceListData;
 import io.github.easyintent.quickref.util.ReferenceListSelection;
+import io.github.easyintent.quickref.viewmodel.ReferenceListViewModel;
 
-import static io.github.easyintent.quickref.fragment.Dialog.info;
+import static io.github.easyintent.quickref.view.Dialog.info;
 
 
-@EFragment(R.layout.fragment_reference_list)
 public class ReferenceListFragment extends Fragment
         implements
         AdapterListener<ReferenceItem>,
@@ -49,20 +43,15 @@ public class ReferenceListFragment extends Fragment
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceListFragment.class);
 
-    @FragmentArg protected String parentId;
-    @FragmentArg protected String query;
-    @FragmentArg protected boolean searchMode;
-
-    @ViewById protected RecyclerView recyclerView;
-    @ViewById protected View emptyView;
-
-    @ViewById protected ViewSwitcher switcher;
-
-    private RepositoryFactory factory;
-    private List<ReferenceItem> list;
+    private String parentId;
+    private String query;
+    private boolean searchMode;
 
     private ReferenceItemAdapter adapter;
     private ActionMode selectionActionMode;
+
+    private FragmentReferenceListBinding binding;
+    private ReferenceListViewModel viewModel;
 
     /** Create list of reference fragment.
      *
@@ -72,7 +61,7 @@ public class ReferenceListFragment extends Fragment
      */
     @NonNull
     public static ReferenceListFragment newListChildrenInstance(@Nullable String parentId) {
-        ReferenceListFragment fragment = new ReferenceListFragmentEx();
+        ReferenceListFragment fragment = new ReferenceListFragment();
         Bundle args = new Bundle();
         args.putString("parentId", parentId);
         fragment.setArguments(args);
@@ -87,7 +76,7 @@ public class ReferenceListFragment extends Fragment
      */
     @NonNull
     public static ReferenceListFragment newSearchInstance(@NonNull String query) {
-        ReferenceListFragment fragment = new ReferenceListFragmentEx();
+        ReferenceListFragment fragment = new ReferenceListFragment();
         Bundle args = new Bundle();
         args.putString("query", query);
         args.putBoolean("searchMode", true);
@@ -98,24 +87,53 @@ public class ReferenceListFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        Bundle args = getArguments();
+        if (args != null) {
+            populateFragmentArguments(args);
+        }
+    }
+
+    private void populateFragmentArguments(Bundle args) {
+        parentId = args.getString("parentId");
+        query = args.getString("query");
+        searchMode = args.getBoolean("searchMode");
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        binding = FragmentReferenceListBinding.inflate(inflater);
+        return binding.getRoot();
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        factory = RepositoryFactory.newInstance(getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        mayRestoreContent();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(ReferenceListViewModel.class);
+        configureViews();
     }
 
-    private void mayRestoreContent() {
-        if (list != null) {
-            showList(list);
+    private void configureViews() {
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        setListShown(false);
+
+        viewModel.getLiveData().observe(getViewLifecycleOwner(), this::showData);
+
+        if (searchMode) {
+            viewModel.search(query);
         } else {
-            load();
+            viewModel.loadCategory(parentId);
+        }
+    }
+
+    private void showData(ReferenceListData data) {
+        if (data.hasList()) {
+            showList(data.getList());
+        } else {
+            showError(data.getMessage());
         }
     }
 
@@ -124,54 +142,17 @@ public class ReferenceListFragment extends Fragment
         return adapter == null || !adapter.isSelectionMode();
     }
 
-    private void load() {
-        setListShown(false);
-        if (searchMode) {
-            search(factory, query);
-        } else {
-            loadCategory(factory, parentId);
-        }
+    private void showError(String message) {
+        info(getParentFragmentManager(), "load_list_error", message);
     }
 
-    @Background
-    protected void search(RepositoryFactory factory, String query) {
-        ReferenceRepository repo = factory.createCategoryRepository();
-        try {
-            list = repo.search(query);
-            showList(list);
-        } catch (RepositoryException e) {
-            logger.debug("Failed to search reference", e);
-            showError(e.getMessage());
-        }
-    }
-
-    @Background
-    protected void loadCategory(RepositoryFactory factory, String parentId) {
-        ReferenceRepository repo = factory.createCategoryRepository();
-        try {
-            list = repo.list(parentId);
-            showList(list);
-        } catch (RepositoryException e) {
-            logger.debug("Failed to get reference list", e);
-            showError(e.getMessage());
-        }
-    }
-
-    @UiThread
-    @IgnoreWhen(IgnoreWhen.State.DETACHED)
-    protected void showError(String message) {
-        info(getFragmentManager(), "load_list_error", message);
-    }
-
-    @UiThread
-    @IgnoreWhen(IgnoreWhen.State.VIEW_DESTROYED)
-    protected void showList(List<ReferenceItem> newList) {
+    private void showList(List<ReferenceItem> list) {
         adapter = new ReferenceItemAdapter(list, this);
-        recyclerView.setAdapter(adapter);
+        binding.recyclerView.setAdapter(adapter);
 
         boolean hasContent = list.size() > 0;
-        emptyView.setVisibility(hasContent ? View.GONE : View.VISIBLE);
-        recyclerView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
+        binding.emptyView.setVisibility(hasContent ? View.GONE : View.VISIBLE);
+        binding.recyclerView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
 
         setListShown(true);
     }
@@ -204,7 +185,7 @@ public class ReferenceListFragment extends Fragment
 
     @Override
     public void onMultiSelectionStart() {
-        ((AppCompatActivity) getActivity()).startSupportActionMode(new SelectorCallback());
+        ((AppCompatActivity) requireActivity()).startSupportActionMode(new SelectorCallback());
         adapter.startSelectionMode();
     }
 
@@ -214,14 +195,14 @@ public class ReferenceListFragment extends Fragment
     }
 
     private void setListShown(boolean shown) {
-        switcher.setDisplayedChild(shown ? 0 : 1);
+        binding.switcher.setDisplayedChild(shown ? 0 : 1);
     }
 
     private class SelectorCallback implements ActionMode.Callback {
 
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-            getActivity().getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
+            requireActivity().getMenuInflater().inflate(R.menu.fragment_reference_select, menu);
             selectionActionMode = actionMode;
             return true;
         }
@@ -242,24 +223,19 @@ public class ReferenceListFragment extends Fragment
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.add_favorite:
-                    addSelectedItemsToFavorites();
-                    break;
+            if (item.getItemId() == R.id.add_favorite && adapter != null) {
+                addSelectedItemsToFavorites(adapter);
             }
             mode.finish();
             return true;
         }
 
-        private void addSelectedItemsToFavorites() {
-            if (adapter == null) {
-                return;
-            }
+        private void addSelectedItemsToFavorites(@NonNull ReferenceItemAdapter adapter) {
             List<String> favorites = ReferenceListSelection.getSelectedIds(adapter.getSelectedItems());
 
             FavoriteConfig favoriteConfig = new FavoriteConfig(getActivity());
             favoriteConfig.add(favorites);
-            Snackbar.make(switcher, R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(binding.getRoot(), R.string.msg_favorite_saved, Snackbar.LENGTH_SHORT).show();
         }
     }
 

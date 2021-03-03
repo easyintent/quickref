@@ -1,32 +1,25 @@
-package io.github.easyintent.quickref.fragment;
+package io.github.easyintent.quickref.view;
 
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-
 import io.github.easyintent.quickref.R;
 
-@EFragment
 public class MessageDialogFragment extends DialogFragment {
 
     public interface Listener {
         void onOkClicked(MessageDialogFragment dialogFragment);
     }
 
-    @FragmentArg
-    protected String message;
-
+    private String message;
     private Listener listener;
 
     public static MessageDialogFragment newInstance(String message) {
-        MessageDialogFragment fragment = new MessageDialogFragmentEx();
+        MessageDialogFragment fragment = new MessageDialogFragment();
         Bundle args = new Bundle();
         args.putString("message", message);
         fragment.setArguments(args);
@@ -36,13 +29,9 @@ public class MessageDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setCancelable(false);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        message = getArguments().getString("message");
         listener = (Listener) getActivity();
+        setCancelable(false);
     }
 
     @NonNull
@@ -51,12 +40,9 @@ public class MessageDialogFragment extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.lbl_info)
                 .setMessage(message)
-                .setPositiveButton(R.string.lbl_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        listener.onOkClicked(MessageDialogFragment.this);
-                        dialogInterface.dismiss();
-                    }
+                .setPositiveButton(R.string.lbl_ok, (dialogInterface, i) -> {
+                    listener.onOkClicked(MessageDialogFragment.this);
+                    dialogInterface.dismiss();
                 })
                 .create();
     }
