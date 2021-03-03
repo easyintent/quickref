@@ -38,13 +38,13 @@ def developmentVersionSuffix = dateFormat.format(new Date())
 
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId "io.github.easyintent.quickref"
         minSdkVersion 16
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 8
-        versionName "0.6.1"
+        versionName "0.7.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
