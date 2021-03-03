@@ -89,10 +89,14 @@ public class ReferenceListFragment extends Fragment
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            parentId = args.getString("parentId");
-            query = args.getString("query");
-            searchMode = args.getBoolean("searchMode");
+            populateFragmentArguments(args);
         }
+    }
+
+    private void populateFragmentArguments(Bundle args) {
+        parentId = args.getString("parentId");
+        query = args.getString("query");
+        searchMode = args.getBoolean("searchMode");
     }
 
     @Nullable

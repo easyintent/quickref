@@ -30,13 +30,8 @@ public class MessageDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         message = getArguments().getString("message");
-        setCancelable(false);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         listener = (Listener) getActivity();
+        setCancelable(false);
     }
 
     @NonNull
