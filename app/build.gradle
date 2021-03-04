@@ -23,8 +23,8 @@ apply plugin: 'com.android.application'
  *  to the git repository.
  *
  */
-def keyStoreFile = rootProject.file("release-key.jks")
-def keyPropsFile = rootProject.file("release-key.properties")
+def keyStoreFile = rootProject.file('release-key.jks')
+def keyPropsFile = rootProject.file('release-key.properties')
 
 def keyProps = new Properties()
 if (keyPropsFile.exists()) {
@@ -40,12 +40,12 @@ def developmentVersionSuffix = dateFormat.format(new Date())
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "io.github.easyintent.quickref"
+        applicationId 'io.github.easyintent.quickref'
         minSdkVersion 16
         targetSdkVersion 30
         versionCode 8
-        versionName "0.7.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        versionName '0.7.0'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     signingConfigs {
@@ -60,7 +60,7 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            versionNameSuffix "-debug"
+            versionNameSuffix '-debug'
         }
         release {
             minifyEnabled false
@@ -99,14 +99,14 @@ android {
     }
 }
 
-def lifecycleVersion = "2.3.0"
+def lifecycleVersion = '2.3.0'
 
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation "androidx.fragment:fragment:1.3.0"
+    implementation 'androidx.fragment:fragment:1.3.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.android.material:material:1.3.0'
 
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycleVersion"
@@ -116,6 +116,7 @@ dependencies {
     debugImplementation 'uk.uuid.slf4j:slf4j-android:1.7.30-0'
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:2.22.0'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test:runner:1.3.0'

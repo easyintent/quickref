@@ -22,7 +22,7 @@ public final class IOUtils {
         while (n >= 0) {
             n = input.read(buffer);
             if (n > 0) {
-                output.write(buffer);
+                output.write(buffer, 0, n);
             }
         }
     }
