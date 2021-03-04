@@ -1,10 +1,8 @@
 package io.github.easyintent.quickref.adapter;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +12,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.github.easyintent.quickref.R;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import io.github.easyintent.quickref.databinding.ItemReferenceBinding;
 import io.github.easyintent.quickref.model.ReferenceItem;
 
 public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdapter.ViewHolder> {
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceItemAdapter.class);
 
-    private List<ReferenceItem> list;
-    private Set<ReferenceItem> selectedItems;
-    private AdapterListener<ReferenceItem> listener;
+    private final List<ReferenceItem> list;
+    private final Set<ReferenceItem> selectedItems;
+    private final AdapterListener<ReferenceItem> listener;
 
     private boolean selectionMode;
 
@@ -33,11 +33,13 @@ public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdap
         selectedItems = new LinkedHashSet<>();
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_reference, parent, false);
-        return new ViewHolder(view);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        ItemReferenceBinding binding = ItemReferenceBinding
+                .inflate(inflater, parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -95,33 +97,25 @@ public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdap
 
     final class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
-        private TextView title;
-        private TextView detail;
-        private TextView command;
-        private View selectionOverlay;
+        private final ItemReferenceBinding binding;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-
-            title = itemView.findViewById(R.id.title_view);
-            detail = itemView.findViewById(R.id.detail_view);
-            command = itemView.findViewById(R.id.command_view);
-
-            selectionOverlay = itemView.findViewById(R.id.selection_overlay);
+        public ViewHolder(ItemReferenceBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
 
         public void bind(ReferenceItem item) {
-            title.setText(item.getTitle());
-            detail.setText(item.getSummary());
+            binding.titleView.setText(item.getTitle());
+            binding.detailView.setText(item.getSummary());
 
             if (item.hasCommand()) {
-                command.setText(item.getCommand());
-                command.setVisibility(View.VISIBLE);
+                binding.commandView.setText(item.getCommand());
+                binding.commandView.setVisibility(View.VISIBLE);
             } else {
-                command.setVisibility(View.GONE);
+                binding.commandView.setVisibility(View.GONE);
             }
 
             updateSelectionOverlay(item);
@@ -129,9 +123,9 @@ public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdap
 
         private void updateSelectionOverlay(ReferenceItem item) {
             if (selectionMode && isSelected(item)) {
-                selectionOverlay.setVisibility(View.VISIBLE);
+                binding.selectionOverlay.setVisibility(View.VISIBLE);
             } else {
-                selectionOverlay.setVisibility(View.GONE);
+                binding.selectionOverlay.setVisibility(View.GONE);
             }
         }
 
