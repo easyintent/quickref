@@ -16,7 +16,6 @@ import java.util.Set;
 
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.model.ReferenceItem;
-import io.github.easyintent.quickref.view.AdapterListener;
 
 public class ReferenceItemAdapter extends RecyclerView.Adapter<ReferenceItemAdapter.ViewHolder> {
 

@@ -1,4 +1,4 @@
-package io.github.easyintent.quickref.view;
+package io.github.easyintent.quickref.adapter;
 
 
 public interface AdapterListener<T> {
