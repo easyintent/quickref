@@ -59,6 +59,17 @@ public class FavoriteListFragment extends Fragment
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        viewModel.refresh();
+    }
+
     @Nullable
     @Override
     public View onCreateView(
@@ -77,9 +88,7 @@ public class FavoriteListFragment extends Fragment
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         viewModel = new ViewModelProvider(this).get(FavoriteListViewModel.class);
-
         viewModel.getLiveData().observe(getViewLifecycleOwner(), this::showData);
-        viewModel.refresh();
     }
 
     private void showData(ReferenceListData data) {
@@ -90,13 +99,8 @@ public class FavoriteListFragment extends Fragment
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-    }
-
     private void showError(String message) {
-        Dialog.info(getParentFragmentManager(), "favorite_error", message);
+        Dialog.info(this, "favorite_error", message);
     }
 
     protected void showList(List<ReferenceItem> list) {
@@ -151,7 +155,6 @@ public class FavoriteListFragment extends Fragment
     }
 
     private class SelectorCallback implements ActionMode.Callback  {
-
 
         @Override
         public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {

@@ -10,8 +10,8 @@ import io.github.easyintent.quickref.repository.RepositoryFactory;
 
 public class QuickRefApplication extends android.app.Application implements ExecutorProvider {
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(4);
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private RepositoryFactory repositoryFactory;
 
     @Override

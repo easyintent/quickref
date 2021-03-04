@@ -4,7 +4,7 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
+import io.github.easyintent.quickref.util.FavoriteConfig;
 
 
 import org.junit.Before;

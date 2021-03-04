@@ -27,7 +27,7 @@ import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
 import io.github.easyintent.quickref.adapter.AdapterListener;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
-import io.github.easyintent.quickref.config.FavoriteConfig;
+import io.github.easyintent.quickref.util.FavoriteConfig;
 import io.github.easyintent.quickref.databinding.FragmentReferenceListBinding;
 import io.github.easyintent.quickref.model.ReferenceItem;
 import io.github.easyintent.quickref.model.ReferenceListData;
@@ -90,14 +90,34 @@ public class ReferenceListFragment extends Fragment
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            populateFragmentArguments(args);
+            retrieveFragmentArgs(args);
         }
     }
 
-    private void populateFragmentArguments(Bundle args) {
+    private void retrieveFragmentArgs(Bundle args) {
         parentId = args.getString("parentId");
         query = args.getString("query");
         searchMode = args.getBoolean("searchMode");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        start();
+    }
+
+    private void start() {
+        setListShown(false);
+        if (searchMode) {
+            viewModel.search(query);
+        } else {
+            viewModel.loadCategory(parentId);
+        }
+    }
+
+    @Override
+    public boolean allowBack() {
+        return adapter == null || !adapter.isSelectionMode();
     }
 
     @Nullable
@@ -114,20 +134,8 @@ public class ReferenceListFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(ReferenceListViewModel.class);
-        configureViews();
-    }
-
-    private void configureViews() {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        setListShown(false);
-
         viewModel.getLiveData().observe(getViewLifecycleOwner(), this::showData);
-
-        if (searchMode) {
-            viewModel.search(query);
-        } else {
-            viewModel.loadCategory(parentId);
-        }
     }
 
     private void showData(ReferenceListData data) {
@@ -136,15 +144,6 @@ public class ReferenceListFragment extends Fragment
         } else {
             showError(data.getMessage());
         }
-    }
-
-    @Override
-    public boolean allowBack() {
-        return adapter == null || !adapter.isSelectionMode();
-    }
-
-    private void showError(String message) {
-        info(getParentFragmentManager(), "load_list_error", message);
     }
 
     private void showList(List<ReferenceItem> list) {
@@ -156,6 +155,10 @@ public class ReferenceListFragment extends Fragment
         binding.recyclerView.setVisibility(hasContent ? View.VISIBLE : View.GONE);
 
         setListShown(true);
+    }
+
+    private void showError(String message) {
+        info(this, "load_list_error", message);
     }
 
     private void showItem(ReferenceItem referenceItem) {
@@ -212,7 +215,6 @@ public class ReferenceListFragment extends Fragment
         public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
             return false;
         }
-
 
         @Override
         public void onDestroyActionMode(ActionMode actionMode) {

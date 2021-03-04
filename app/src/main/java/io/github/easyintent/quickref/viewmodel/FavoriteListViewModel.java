@@ -12,7 +12,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import io.github.easyintent.quickref.ExecutorProvider;
 import io.github.easyintent.quickref.QuickRefApplication;
-import io.github.easyintent.quickref.config.FavoriteConfig;
+import io.github.easyintent.quickref.util.FavoriteConfig;
 import io.github.easyintent.quickref.model.ReferenceItem;
 import io.github.easyintent.quickref.model.ReferenceListData;
 import io.github.easyintent.quickref.repository.ReferenceRepository;

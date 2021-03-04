@@ -1,4 +1,4 @@
-package io.github.easyintent.quickref.config;
+package io.github.easyintent.quickref.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
