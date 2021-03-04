@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import io.github.easyintent.quickref.QuickRefActivity;
 import io.github.easyintent.quickref.R;
+import io.github.easyintent.quickref.adapter.AdapterListener;
 import io.github.easyintent.quickref.adapter.ReferenceItemAdapter;
 import io.github.easyintent.quickref.config.FavoriteConfig;
 import io.github.easyintent.quickref.databinding.FragmentReferenceListBinding;
