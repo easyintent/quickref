@@ -99,26 +99,22 @@ android {
     }
 }
 
-def lifecycleVersion = '2.4.1'
-
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'androidx.fragment:fragment:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.fragment:fragment:1.5.5'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'com.google.android.material:material:1.3.0'
-
-    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycleVersion"
-
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.5.1'
+    implementation 'com.google.android.material:material:1.4.0'
     implementation 'org.slf4j:slf4j-api:1.7.36'
     releaseImplementation 'org.slf4j:slf4j-nop:1.7.36'
     debugImplementation 'uk.uuid.slf4j:slf4j-android:1.7.30-0'
 
     testImplementation 'junit:junit:4.13.2'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation ('commons-io:commons-io:2.6') {  transitive = false  }
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation ('commons-io:commons-io:2.11.0') {  transitive = false  }
 }
